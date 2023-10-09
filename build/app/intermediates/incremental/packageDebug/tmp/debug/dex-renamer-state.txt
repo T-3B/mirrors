@@ -1,4 +1,4 @@
-#Fri Sep 22 23:20:45 CEST 2023
-base.0=/home/louis/Flutter_projects/mirrors/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+#Mon Oct 09 17:39:58 CEST 2023
+base.0=C\:\\Users\\louis\\Desktop\\mirrors\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
 path.0=classes.dex
 renamed.0=classes.dex

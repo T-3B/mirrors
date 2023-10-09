@@ -24,4 +24,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/in_game
+    - assets/in_game/
