@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mirrors/models/home/home_assets.dart';
+import 'package:mirrors/views/home/about_view.dart';
+import 'package:mirrors/views/home/home_view.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,10 +13,18 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      routes: {
+        'home': (context) => const HomeView(),
+        'about': (context) => const AboutView(),
+        'settings': (context) => const AboutView(),
+        'play': (context) => const AboutView()
+      },
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+        body: ChangeNotifierProvider(
+          create: (BuildContext context) => HomeAssets(),
+          child: const HomeView(),
         ),
       ),
     );
