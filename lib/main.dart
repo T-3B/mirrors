@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:mirrors/models/home/home_assets.dart';
+import 'package:mirrors/views/gamePlay/game_view.dart';
 import 'package:mirrors/views/home/about_view.dart';
 import 'package:mirrors/views/home/home_view.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  // Force landscape orientation
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
   runApp(const MainApp());
 }
 
@@ -19,7 +26,7 @@ class MainApp extends StatelessWidget {
         'home': (context) => const HomeView(),
         'about': (context) => const AboutView(),
         'settings': (context) => const AboutView(),
-        'play': (context) => const AboutView()
+        'play': (context) => GameView()
       },
       home: Scaffold(
         body: ChangeNotifierProvider(
