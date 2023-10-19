@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirrors/models/home/home_assets.dart';
 import 'package:mirrors/views/gamePlay/game_view.dart';
-import 'package:mirrors/views/home/about_view.dart';
 import 'package:mirrors/views/menu/about.dart';
 import 'package:mirrors/views/menu/home.dart';
 import 'package:mirrors/views/menu/settings.dart';
