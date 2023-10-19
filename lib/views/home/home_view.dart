@@ -10,7 +10,6 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     NavigationController navigation = NavigationController();
 
     var backLines = <Widget>[];
@@ -36,7 +35,7 @@ class HomeView extends StatelessWidget {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0))));
 
     return Consumer(builder: (context, HomeAssets homeAssets, _) {
-      if(!homeAssets.ready) {
+      if (!homeAssets.ready) {
         return const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -50,120 +49,123 @@ class HomeView extends StatelessWidget {
         );
       } else {
         return Scaffold(
-                backgroundColor: Colors.black,
-                body: Stack(
-                  children: <Widget>[
-                    Column(children: backLines),
-                    Positioned(
-                        top: MediaQuery.of(context).size.height / 8,
-                        left: (MediaQuery.of(context).size.width / 2) - 75,
-                        child: SizedBox(
-                          width: 150,
-                          child: Column(
-                            children: [
-                              homeAssets.face,
-                              Stack(
-                                children: <Widget>[
-                                  Text(
-                                    'Reflector',
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      foreground: Paint()
-                                        ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 5
-                                        ..color = Colors.green
-                                    ),
-                                  ),
-                                  const Text(
-                                    'Reflector',
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Stack(
-                                children: <Widget>[
-                                  Text(
-                                    'Quest',
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      foreground: Paint()
-                                        ..style = PaintingStyle.stroke
-                                        ..strokeWidth = 5
-                                        ..color = Colors.green
-                                    ),
-                                  ),
-                                  const Text(
-                                    'Quest',
-                                    style: TextStyle(
-                                      fontSize: 25,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )),
-                    SizedBox(
-                      width: double.infinity,
-                      height: double.infinity,
+            backgroundColor: Colors.black,
+            body: Stack(
+              children: <Widget>[
+                Column(children: backLines),
+                Positioned(
+                    top: MediaQuery.of(context).size.height / 8,
+                    left: (MediaQuery.of(context).size.width / 2) - 75,
+                    child: SizedBox(
+                      width: 150,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          homeAssets.face,
                           Stack(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(
-                                  bottom: (MediaQuery.of(context).size.height / 15),
-                                  top: 40
-                                ),
-                                width: double.infinity,
-                                height: 50,
-                                child: _MovingPathAnimation(homeAssets.ground),
+                            children: <Widget>[
+                              Text(
+                                'Reflector',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    foreground: Paint()
+                                      ..style = PaintingStyle.stroke
+                                      ..strokeWidth = 5
+                                      ..color = Colors.green),
                               ),
-                              Positioned(
-                                bottom: (MediaQuery.of(context).size.height / 15 + 15),
-                                child: Container(
-                                  margin: const EdgeInsets.only(left: 10),
-                                  width: 70,
-                                  child: _AnimatedPlayer(homeAssets.movablePlayerState),
+                              const Text(
+                                'Reflector',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
                           ),
-                          Container(
-                            margin: const EdgeInsets.all(10),
-                            width: double.infinity,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                ElevatedButton(
-                                    style: defaultButtonStyle,
-                                    onPressed: () => navigation.pushNewPage(context, 'settings'),
-                                    child: const Icon(Icons.settings)),
-                                ElevatedButton(
-                                    style: defaultButtonStyle,
-                                    onPressed: () => navigation.pushNewPage(context, 'about'),
-                                    child: const Icon(Icons.info))
-                              ],
-                            ),
+                          Stack(
+                            children: <Widget>[
+                              Text(
+                                'Quest',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    foreground: Paint()
+                                      ..style = PaintingStyle.stroke
+                                      ..strokeWidth = 5
+                                      ..color = Colors.green),
+                              ),
+                              const Text(
+                                'Quest',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
                           ),
-                          Container(
-                              margin: const EdgeInsets.all(10),
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                  style: defaultButtonStyle,
-                                  onPressed: () => navigation.pushNewPage(context, 'play'),
-                                  child: const Text('PLAY'))),
                         ],
                       ),
-                    ),
-                  ],
-                ));
+                    )),
+                SizedBox(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Stack(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(
+                                bottom:
+                                    (MediaQuery.of(context).size.height / 15),
+                                top: 40),
+                            width: double.infinity,
+                            height: 50,
+                            child: _MovingPathAnimation(homeAssets.ground),
+                          ),
+                          Positioned(
+                            bottom:
+                                (MediaQuery.of(context).size.height / 15 + 15),
+                            child: Container(
+                              margin: const EdgeInsets.only(left: 10),
+                              width: 70,
+                              child: _AnimatedPlayer(
+                                  homeAssets.movablePlayerState),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        margin: const EdgeInsets.all(10),
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton(
+                                style: defaultButtonStyle,
+                                onPressed: () =>
+                                    navigation.pushNewPage(context, 'settings'),
+                                child: const Icon(Icons.settings)),
+                            ElevatedButton(
+                                style: defaultButtonStyle,
+                                onPressed: () =>
+                                    navigation.pushNewPage(context, 'about'),
+                                child: const Icon(Icons.info))
+                          ],
+                        ),
+                      ),
+                      Container(
+                          margin: const EdgeInsets.all(10),
+                          width: double.infinity,
+                          child: ElevatedButton(
+                              style: defaultButtonStyle,
+                              onPressed: () =>
+                                  navigation.pushNewPage(context, 'play'),
+                              child: const Text('PLAY'))),
+                    ],
+                  ),
+                ),
+              ],
+            ));
       }
     });
   }
@@ -208,6 +210,7 @@ class _AnimatedPlayerState extends State<_AnimatedPlayer> {
     super.initState();
     _sprite = widget._movablePlayerState[0];
   }
+
   @override
   Widget build(BuildContext context) {
     _startAnimation();
@@ -239,7 +242,8 @@ class _MovingPathAnimation extends StatefulWidget {
   _MovingPathAnimationState createState() => _MovingPathAnimationState();
 }
 
-class _MovingPathAnimationState extends State<_MovingPathAnimation> with TickerProviderStateMixin {
+class _MovingPathAnimationState extends State<_MovingPathAnimation>
+    with TickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -271,7 +275,8 @@ class _MovingPathAnimationState extends State<_MovingPathAnimation> with TickerP
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
-        double containerPosition = position - (_controller.value * 100.0); // with container
+        double containerPosition =
+            position - (_controller.value * 100.0); // with container
         if (containerPosition < -200.0) {
           containerPosition += 800.0; // total width path
         }
@@ -291,7 +296,9 @@ class _MovingPathAnimationState extends State<_MovingPathAnimation> with TickerP
   Widget build(BuildContext context) {
     List<Widget> ground = [];
     int index = 0;
-    for(double i = 0.0; i < MediaQuery.of(context).size.width + 100; i += 50.0) {
+    for (double i = 0.0;
+        i < MediaQuery.of(context).size.width + 100;
+        i += 50.0) {
       ground.insert(index++, _buildMovingContainer(i));
     }
 
@@ -300,4 +307,3 @@ class _MovingPathAnimationState extends State<_MovingPathAnimation> with TickerP
     );
   }
 }
-
