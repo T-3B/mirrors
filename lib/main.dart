@@ -26,7 +26,7 @@ class MainApp extends StatelessWidget {
         'home': (context) => const Home(),
         'about': (context) => const About(),
         'settings': (context) => const Settings(),
-        'play': (context) => const AboutView()
+        'play': (context) => GameView()
       },
       home: Scaffold(
         body: ChangeNotifierProvider(
