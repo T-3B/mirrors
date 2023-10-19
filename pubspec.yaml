@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   flutter_launcher_icons: ^0.13.1
   provider: ^6.0.5
+  audioplayers: ^5.2.0
 
 flutter_icons:
   android: "launcher_icon"
@@ -27,3 +28,5 @@ flutter:
   assets:
     - assets/in_game/
     - assets/icon/
+    - assets/sound/
+    - assets/music/

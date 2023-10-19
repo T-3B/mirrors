@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:mirrors/models/assets_model.dart';
 import 'package:mirrors/models/constant_model.dart';
@@ -10,6 +11,7 @@ class HomeAssets extends ChangeNotifier {
   var movablePlayerState = <Image>[];
   var ground;
   var face;
+  AudioPlayer? mainTheme;
 
   bool _loading = true;
   bool _ready = false;
@@ -26,7 +28,7 @@ class HomeAssets extends ChangeNotifier {
   }
 
   void _updateScreen() {
-    if(ready) {
+    if (ready) {
       notifyListeners();
     }
   }
@@ -42,6 +44,7 @@ class HomeAssets extends ChangeNotifier {
     playerMap.insert(3, model.getPlayerImage(Player.eastStatic));
     movablePlayerState = playerMap;
     face = model.getPlayerImage(Player.face);
+    mainTheme = model.getMainTheme();
     // load ground assets
     ground = model.getGroundImage(Ground.concrete);
     _ready = true;
