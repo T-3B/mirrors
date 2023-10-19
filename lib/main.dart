@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mirrors/models/home/home_assets.dart';
 import 'package:mirrors/views/home/about_view.dart';
 import 'package:mirrors/views/home/home_view.dart';
+import 'package:mirrors/views/level/level.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -19,7 +20,7 @@ class MainApp extends StatelessWidget {
         'home': (context) => const HomeView(),
         'about': (context) => const AboutView(),
         'settings': (context) => const AboutView(),
-        'play': (context) => const AboutView()
+        'play': (context) => const LevelView(1)
       },
       home: Scaffold(
         body: ChangeNotifierProvider(
