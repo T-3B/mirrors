@@ -6,6 +6,7 @@ class PlayerController {
   PlayerController(this.player);
 
   void moveLeft() {
+    print("object " + player.x.toString() + " " + player.y.toString());
     player.moveLeft();
   }
 

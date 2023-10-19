@@ -12,7 +12,8 @@ class PlayerWidget extends StatelessWidget {
     return Container(
       width: 50, // Adjust the size as needed
       height: 50, // Adjust the size as needed
-      color: Colors.blue, // Adjust the color as needed
+      color: const Color.fromARGB(
+          255, 255, 255, 255), // Adjust the color as needed
     );
   }
 }
