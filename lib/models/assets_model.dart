@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:mirrors/models/constant_model.dart';
 
@@ -10,19 +11,23 @@ class AssetsModel {
 
   static Map<Player, Image>? _playerImage;
   static Map<Ground, Image>? _groundImage;
+  static List<AudioPlayer>? _music;
 
-  AssetsModel._privateConstructor(Map<Player, Image> p, Map<Ground, Image> g) {
+  AssetsModel._privateConstructor(
+      Map<Player, Image> p, Map<Ground, Image> g, List<AudioPlayer> m) {
     _playerImage = p;
     _groundImage = g;
+    _music = m;
   }
 
   static Future<AssetsModel> get() async {
-    if(_model == null && _first) {
+    if (_model == null && _first) {
       _first = false;
       var p = await _loadCharacterAssets();
       var g = await _loadGroundAssets();
-      _model = AssetsModel._privateConstructor(p, g);
-      for(var lock in _locks) {
+      var m = [await _loadSound()];
+      _model = AssetsModel._privateConstructor(p, g, m);
+      for (var lock in _locks) {
         lock.complete();
       }
     } else {
@@ -39,7 +44,7 @@ class AssetsModel {
 
   static Future<Map<Player, Image>> _loadCharacterAssets() async {
     var playerImageMap = <Player, Image>{};
-    for(var key in playerAssets.keys) {
+    for (var key in playerAssets.keys) {
       var img = _loadAssetImage(playerAssets[key]!);
       playerImageMap[key] = await img;
     }
@@ -48,11 +53,17 @@ class AssetsModel {
 
   static Future<Map<Ground, Image>> _loadGroundAssets() async {
     var groundImageMap = <Ground, Image>{};
-    for(var key in groundAssets.keys) {
+    for (var key in groundAssets.keys) {
       var img = _loadAssetImage(groundAssets[key]!);
       groundImageMap[key] = await img;
     }
     return groundImageMap;
+  }
+
+  static Future<AudioPlayer> _loadSound() async {
+    var player = AudioPlayer();
+    await player.setSource(AssetSource('music/mainTheme.mp3'));
+    return player;
   }
 
   Image getPlayerImage(Player p) {
@@ -61,5 +72,9 @@ class AssetsModel {
 
   Image getGroundImage(Ground g) {
     return _groundImage![g]!;
+  }
+
+  AudioPlayer getMainTheme() {
+    return _music![0];
   }
 }

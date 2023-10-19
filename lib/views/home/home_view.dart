@@ -24,7 +24,7 @@ class HomeView extends StatelessWidget {
           i * 2 + 1,
           CustomPaint(
             size: const Size(double.infinity, 20.0),
-            painter: BackgroundLine(width: 20.0, color: Colors.black),
+            painter: BackgroundLine(width: 20.0, color: Colors.transparent),
           ));
     }
 
@@ -50,121 +50,131 @@ class HomeView extends StatelessWidget {
       } else {
         return Scaffold(
             backgroundColor: Colors.black,
-            body: Stack(
-              children: <Widget>[
-                Column(children: backLines),
-                Positioned(
-                    top: MediaQuery.of(context).size.height / 8,
-                    left: (MediaQuery.of(context).size.width / 2) - 75,
-                    child: SizedBox(
-                      width: 150,
-                      child: Column(
-                        children: [
-                          homeAssets.face,
-                          Stack(
-                            children: <Widget>[
-                              Text(
-                                'Reflector',
-                                style: TextStyle(
-                                    fontSize: 25,
-                                    foreground: Paint()
-                                      ..style = PaintingStyle.stroke
-                                      ..strokeWidth = 5
-                                      ..color = Colors.green),
-                              ),
-                              const Text(
-                                'Reflector',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Stack(
-                            children: <Widget>[
-                              Text(
-                                'Quest',
-                                style: TextStyle(
-                                    fontSize: 25,
-                                    foreground: Paint()
-                                      ..style = PaintingStyle.stroke
-                                      ..strokeWidth = 5
-                                      ..color = Colors.green),
-                              ),
-                              const Text(
-                                'Quest',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )),
-                SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Stack(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(
-                                bottom:
-                                    (MediaQuery.of(context).size.height / 15),
-                                top: 40),
-                            width: double.infinity,
-                            height: 50,
-                            child: _MovingPathAnimation(homeAssets.ground),
-                          ),
-                          Positioned(
-                            bottom:
-                                (MediaQuery.of(context).size.height / 15 + 15),
-                            child: Container(
-                              margin: const EdgeInsets.only(left: 10),
-                              width: 70,
-                              child: _AnimatedPlayer(
-                                  homeAssets.movablePlayerState),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        margin: const EdgeInsets.all(10),
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            body: Container(
+              decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                    Colors.grey,
+                    Colors.black,
+                  ])),
+              child: Stack(
+                children: <Widget>[
+                  Column(children: backLines),
+                  Positioned(
+                      top: MediaQuery.of(context).size.height / 8,
+                      left: (MediaQuery.of(context).size.width / 2) - 75,
+                      child: SizedBox(
+                        width: 150,
+                        child: Column(
                           children: [
-                            ElevatedButton(
-                                style: defaultButtonStyle,
-                                onPressed: () =>
-                                    navigation.pushNewPage(context, 'settings'),
-                                child: const Icon(Icons.settings)),
-                            ElevatedButton(
-                                style: defaultButtonStyle,
-                                onPressed: () =>
-                                    navigation.pushNewPage(context, 'about'),
-                                child: const Icon(Icons.info))
+                            homeAssets.face,
+                            Stack(
+                              children: <Widget>[
+                                Text(
+                                  'Reflector',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      foreground: Paint()
+                                        ..style = PaintingStyle.stroke
+                                        ..strokeWidth = 5
+                                        ..color = Colors.green),
+                                ),
+                                const Text(
+                                  'Reflector',
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Stack(
+                              children: <Widget>[
+                                Text(
+                                  'Quest',
+                                  style: TextStyle(
+                                      fontSize: 25,
+                                      foreground: Paint()
+                                        ..style = PaintingStyle.stroke
+                                        ..strokeWidth = 5
+                                        ..color = Colors.green),
+                                ),
+                                const Text(
+                                  'Quest',
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
-                      ),
-                      Container(
+                      )),
+                  SizedBox(
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Stack(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(
+                                  bottom:
+                                      (MediaQuery.of(context).size.height / 15),
+                                  top: 40),
+                              width: double.infinity,
+                              height: 50,
+                              child: _MovingPathAnimation(homeAssets.ground),
+                            ),
+                            Positioned(
+                              bottom: (MediaQuery.of(context).size.height / 15 +
+                                  15),
+                              child: Container(
+                                margin: const EdgeInsets.only(left: 10),
+                                width: 70,
+                                child: _AnimatedPlayer(
+                                    homeAssets.movablePlayerState),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
                           margin: const EdgeInsets.all(10),
                           width: double.infinity,
-                          child: ElevatedButton(
-                              style: defaultButtonStyle,
-                              onPressed: () =>
-                                  navigation.pushNewPage(context, 'play'),
-                              child: const Text('PLAY'))),
-                    ],
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ElevatedButton(
+                                  style: defaultButtonStyle,
+                                  onPressed: () => navigation.pushNewPage(
+                                      context, 'settings'),
+                                  child: const Icon(Icons.settings)),
+                              ElevatedButton(
+                                  style: defaultButtonStyle,
+                                  onPressed: () =>
+                                      navigation.pushNewPage(context, 'about'),
+                                  child: const Icon(Icons.info))
+                            ],
+                          ),
+                        ),
+                        Container(
+                            margin: const EdgeInsets.all(10),
+                            width: double.infinity,
+                            child: ElevatedButton(
+                                style: defaultButtonStyle,
+                                onPressed: () =>
+                                    navigation.pushNewPage(context, 'play'),
+                                child: const Text('PLAY'))),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ));
       }
     });
@@ -177,14 +187,14 @@ class BackgroundLine extends CustomPainter {
   final Color color;
 
   BackgroundLine(
-      {this.angle = 30, this.width = 10.0, this.color = Colors.black});
+      {this.angle = 45, this.width = 10.0, this.color = Colors.transparent});
 
   @override
   void paint(Canvas canvas, Size size) {
     canvas.drawPath(
         Path()
-          ..moveTo(0.0, size.height)
-          ..lineTo(size.width, size.width * tan(angle * (pi / 180.0))),
+          ..moveTo(100.0, 0)
+          ..lineTo(size.width, size.width * tan(angle * (pi / 300.0))),
         Paint()
           ..color = color
           ..style = PaintingStyle.stroke
