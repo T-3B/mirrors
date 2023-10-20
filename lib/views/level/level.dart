@@ -30,21 +30,22 @@ class LevelView extends StatelessWidget {
     //String data = await getFileData('assets/levels/$levelID.txt');
     final int width = lines[0].length;
     final int height = lines.length;
-    return Center(
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: width, childAspectRatio: 1),
-          itemCount: width * height,
-          physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (BuildContext context, int index) {
-            return SizedBox(width: MediaQuery.of(context).size.width * .1,  // TODO for whatever reason no maxsize is working
-              child: switch (lines[index ~/ width][index % width]) {
-                'W' => Wall().view,
-                'C' => Stack(children: [Ground().view, Coin().view]),
-                _ => Ground().view
-            });
-          })
+    return Scaffold(
+        body: Center(
+          child: GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: width, childAspectRatio: 1),
+            itemCount: width * height,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (BuildContext context, int index) {
+              return ConstrainedBox(constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.width * .05),  // TODO for whatever reason no maxsize is working
+                child: switch (lines[index ~/ width][index % width]) {
+                  'W' => Wall().view,
+                  'C' => Coin().view,
+                  _ => Ground().view
+              });
+            })
+    )
     );
-
   }
 
 }
