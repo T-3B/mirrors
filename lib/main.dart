@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mirrors/models/home/home_assets.dart';
-import 'package:mirrors/views/gamePlay/game_view.dart';
+import 'package:mirrors/views/level/level.dart';
 import 'package:mirrors/views/menu/about.dart';
 import 'package:mirrors/views/menu/home.dart';
 import 'package:mirrors/views/menu/settings.dart';
@@ -26,7 +26,7 @@ class MainApp extends StatelessWidget {
         'home': (context) => const Home(),
         'about': (context) => const About(),
         'settings': (context) => const Settings(),
-        'play': (context) => GameView()
+        'play': (context) => const LevelView(1)
       },
       home: Scaffold(
         body: ChangeNotifierProvider(

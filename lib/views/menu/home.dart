@@ -99,7 +99,9 @@ class Home extends StatelessWidget {
                 child: Column(
                   children: [
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, 'play');
+                      },
                       child: Stack(children: [
                         Text(
                           'PLAY',

@@ -21,12 +21,13 @@ flutter_icons:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
   assets:
     - assets/in_game/
     - assets/icon/
-    - assets/sound/
+    - assets/levels/
     - assets/music/
+    - assets/sound/
