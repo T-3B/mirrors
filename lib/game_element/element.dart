@@ -17,32 +17,61 @@ enum AssetsPaths {
 }
 
 abstract class Element {
-  final AssetsPaths _asset;
-  late final List<Image> _images;
-  late Widget _view;
+  final AssetsPaths _assetsPaths;
+  List<Image>? _images;
+  Widget? _view;
 
-  Element(this._asset) {
-    _images = _asset.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
-    _view = _images.length > 1 ? SpriteAnimation(_images, const Duration(milliseconds: 300)) : _images[0];
+  Element(this._assetsPaths);
+
+  Future<Widget> get view async {
+    _images ??= _assetsPaths.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
+    _view ??= _images!.length > 1 ? SpriteAnimation(_images!, const Duration(milliseconds: 300)) : _images![0];
+    return _view!;
   }
-
-  get view => _view;
 }
 
 abstract class StackableElement extends Element {
-  StackableElement(paths): super(paths) {
-    _view = Stack(fit: StackFit.expand, children: [Ground().view, _view]);
+  StackableElement(super._assetsPaths);
+
+  @override
+  Future<Widget> get view async {
+    if (_view == null) {
+      super.view;
+      _view = Stack(fit: StackFit.expand, children: [await Ground().view, _view!]);
+    }
+    return _view!;
   }
 }
 
 class Coin extends StackableElement {
-  Coin(): super(AssetsPaths.coin);
+  Coin._privateConstructor(): super(AssetsPaths.coin);
+
+  static Coin? _instance;
+
+  factory Coin() {
+    _instance ??= Coin._privateConstructor();
+    return _instance!;
+  }
 }
 
 class Ground extends Element {
-  Ground(): super(AssetsPaths.ground);
+  Ground._privateConstructor(): super(AssetsPaths.ground);
+
+  static Ground? _instance;
+
+  factory Ground() {
+    _instance ??= Ground._privateConstructor();
+    return _instance!;
+  }
 }
 
 class Wall extends Element {
-  Wall(): super(AssetsPaths.wall);
+  Wall._privateConstructor(): super(AssetsPaths.wall);
+
+  static Wall? _instance;
+
+  factory Wall() {
+    _instance ??= Wall._privateConstructor();
+    return _instance!;
+  }
 }
