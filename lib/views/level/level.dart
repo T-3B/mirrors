@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mirrors/game_element/element.dart';
+import 'package:mirrors/models/element.dart';
 
 import '../menu/loading.dart';
 
@@ -23,7 +23,7 @@ class LevelView extends StatelessWidget {
         final int height = levelData.length;
         return Scaffold(
           body: Center(
-            child: Container(
+            child: SizedBox(
               width: itemSize * width,  // instead of displaying Elements at fixed size, we fixed the size of the whole GridView
               child: GridView.builder(
                 shrinkWrap: true,
