@@ -4,9 +4,23 @@ import 'package:mirrors/models/element.dart';
 
 import '../menu/loading.dart';
 
-class LevelView extends StatelessWidget {
-  const LevelView(this.levelID, {super.key});
-  final int levelID;
+class LevelView extends StatefulWidget {
+  final int _levelID;
+  const LevelView(this._levelID, {super.key});
+
+  @override
+  State createState() => _LevelViewState();
+}
+
+class _LevelViewState extends State<LevelView> {
+  _LevelViewState();
+
+  void updateChildInGridView(int index, String newChar) {
+    setState(() {
+      levelData[index ~/ width] =
+          levelData[index ~/ width].replaceRange(index % width, index % width + 1, newChar);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +57,6 @@ class LevelView extends StatelessWidget {
     'C': await Coin().view,
     'G': await Ground().view,
     'W': await Wall().view,
-    'levelData': await rootBundle.loadString('assets/levels/$levelID.txt')
+    'levelData': await rootBundle.loadString('assets/levels/${widget._levelID}.txt')
   };
 }

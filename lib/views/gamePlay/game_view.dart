@@ -8,10 +8,9 @@ class GameView extends StatelessWidget {
   final Player player;
   final PlayerController playerController;
 
-  GameView({Key? key})
+  GameView({super.key})
       : player = Player(),
-        playerController = PlayerController(Player()),
-        super(key: key);
+        playerController = PlayerController(Player());
 
   @override
   Widget build(BuildContext context) {
