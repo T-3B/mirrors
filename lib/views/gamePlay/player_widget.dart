@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../models/player.dart';
 
 class PlayerWidget extends StatelessWidget {
-  @override
-  final Key? key;
-
-  const PlayerWidget({this.key}) : super(key: key);
+  const PlayerWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Define the appearance of your character using any Flutter widgets.
+    final player = Provider.of<Player>(context);
+
+    print("position changed");
     return Container(
-      width: 50, // Adjust the size as needed
-      height: 50, // Adjust the size as needed
-      color: const Color.fromARGB(
-          255, 255, 255, 255), // Adjust the color as needed
+      width: 50,
+      height: 50,
+      color: const Color.fromARGB(255, 255, 255, 255),
     );
   }
 }
