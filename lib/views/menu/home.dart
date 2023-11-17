@@ -1,4 +1,6 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:mirrors/models/global_settings.dart';
 import 'package:mirrors/models/home/home_assets.dart';
 import 'package:mirrors/views/animation/endless_animation.dart';
 import 'package:mirrors/views/animation/sprite_animation.dart';
@@ -15,19 +17,33 @@ class Home extends StatelessWidget {
       iconColor: MaterialStatePropertyAll(Colors.white),
     );
 
-    return Consumer(builder: (context, HomeAssets homeAssets, _) {
+    return Consumer2(builder: (context, HomeAssets homeAssets, GlobalSettings settings, _) {
       if (!homeAssets.ready) {
         return const Loading();
       } else {
         // play music
-        //homeAssets.mainTheme!.resume();
-        //homeAssets.mainTheme!.setReleaseMode(ReleaseMode.loop);
+        if(settings.volume) {
+          homeAssets.mainTheme!.resume();
+          homeAssets.mainTheme!.setReleaseMode(ReleaseMode.loop);
+        } else {
+          homeAssets.mainTheme!.stop();
+        }
 
         //MusicPlayer(homeAssets.mainTheme!);
 
         return Common(
           Stack(
             children: [
+              /*Consumer(
+                builder: (context, GlobalSettings settings, child) {
+                  if(settings.volume) {
+                    homeAssets.mainTheme!.resume();
+                    homeAssets.mainTheme!.setReleaseMode(ReleaseMode.loop);
+                  } else {
+                    homeAssets.mainTheme!.stop();
+                  }
+                },
+              ),*/
               Positioned(
                 top: 0,
                 right: 0,
