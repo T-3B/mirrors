@@ -41,16 +41,16 @@ class _LevelControllerState extends State<LevelController> {
         ),
       ],
       child: Builder(builder: (context) => Scaffold(
-        backgroundColor: primaryDarkColor,
+        backgroundColor: backgroundColor,
         body: Stack(
           children: <Widget>[
             Center(
               child: Stack(
                 children: <Widget>[
+                  _levelView,
                   Positioned(top: context.watch<Player>().offset.dy, left: context.watch<Player>().offset.dx, width: elementSize,
                     child: const Image(image: AssetImage('assets/in_game/player_south_static.png'), fit: BoxFit.contain)  // TODO change that to async load (easier when we'll have a Player extending Element)
-                  ),
-                  _levelView,
+                  )
                 ],
               )
             ),
@@ -128,9 +128,9 @@ class _DirectionButtonState extends State<DirectionButton> {
   bool _isHeld = false;
 
   void _continuousMove() {
-    Future.delayed(const Duration(seconds: 1), () {
+    context.read<Player>().tryMove(widget.direction);
+    Future.delayed(const Duration(milliseconds: 500), () {
       if (_isHeld) {
-        context.read<Player>().tryMove(widget.direction);
         _continuousMove();
       }
     });
@@ -170,7 +170,6 @@ class Player extends ChangeNotifier {
 
   bool tryMove(Direction dir) {  // we move only if possible, and if we moved then return true
     final newPosition = position.translate(dir);
-
     if (_levelDataManager.getElementAt(newPosition).runtimeType != Wall) {
       _move(dir);
       return true;
@@ -208,7 +207,7 @@ class Position {
 class LevelDataManager {  // singleton
   static LevelDataManager? _instance;
   late final List<String> _levelRows;
-  late final List<List<ElementLevel>> _levelData;
+  late final List<List<ElementLevel>> _levelData;  // WARNING: _levelData is encoded as [lineNbr][Row] which is [y][x] (opposite as what we could think) (TODO change? we would need the transpose of that matrix)
   late final Position initialPlayerPosition;
   LevelDataManager._privateConstructor();
 
@@ -218,7 +217,7 @@ class LevelDataManager {  // singleton
   }
 
   Future<void> loadLevelData(int levelID) async {
-    initialPlayerPosition = Position(0, 0);  // TODO remove this when LevelController await for loadLevelData
+    initialPlayerPosition = Position(3, 2);  // TODO remove this when LevelController await for loadLevelData
     _levelRows = (await rootBundle.loadString('assets/levels/$levelID.txt')).split('\n');
     _levelData = _parseLevelData();
   }
@@ -227,7 +226,7 @@ class LevelDataManager {  // singleton
     if (_levelData.isEmpty || position.x < 0 || position.y < 0 || position.x >= width || position.y >= height) {
       return Wall(); // Default to ground if out of bounds
     }
-    return _levelData[position.x][position.y];
+    return _levelData[position.y][position.x];
   }
 
   List<List<ElementLevel>> _parseLevelData() {

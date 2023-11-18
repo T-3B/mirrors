@@ -32,7 +32,7 @@ class _LevelViewState extends State<LevelView> {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: widget.levelDataManager.width, childAspectRatio: 1),
             itemCount: widget.levelDataManager.width * widget.levelDataManager.height,
             physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context, int index) => snapshot.data?[widget.levelDataManager.getElementAt(Position(index ~/ widget.levelDataManager.width, index % widget.levelDataManager.width))]
+            itemBuilder: (BuildContext context, int index) => snapshot.data?[widget.levelDataManager.getElementAt(Position(index % widget.levelDataManager.width, index ~/ widget.levelDataManager.width))]
           )
         );
       }
