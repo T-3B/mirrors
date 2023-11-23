@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mirrors/models/global_settings.dart';
 import 'package:mirrors/models/home/home_assets.dart';
-import 'package:mirrors/views/home/about_view.dart';
 import 'package:mirrors/views/menu/about.dart';
 import 'package:mirrors/views/menu/home.dart';
+import 'package:mirrors/views/menu/level.dart';
+import 'package:mirrors/views/menu/loading.dart';
 import 'package:mirrors/views/menu/settings.dart';
 import 'package:provider/provider.dart';
 
@@ -20,18 +22,25 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      routes: {
-        'home': (context) => const Home(),
-        'about': (context) => const About(),
-        'settings': (context) => const Settings(),
-        'play': (context) => GameView()
-      },
-      home: Scaffold(
-        body: ChangeNotifierProvider(
-          create: (BuildContext context) => HomeAssets(),
-          child: const Home(),
+    return ChangeNotifierProvider(
+      create: (context) => GlobalSettings(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        routes: {
+          'home': (context) => const Home(),
+          'about': (context) => const About(),
+          'settings': (context) => const Settings(),
+          'play': (context) => ChangeNotifierProvider(
+            create: (context) => HomeAssets(),
+            child: const Level(),
+          ),
+          'random': (context) => const Loading(), // change by random level class 
+        },
+        home: Scaffold(
+          body: ChangeNotifierProvider(
+            create: (context) => HomeAssets(),
+            child: const Home(),
+          ),
         ),
       ),
     );
