@@ -16,12 +16,12 @@ enum AssetsPaths {
   final List paths;
 }
 
-abstract class Element {
-  final AssetsPaths _assetsPaths;
+abstract class ElementLevel {
+  final AssetsPaths _assetsPaths;  // TODO make Player an Element
   List<Image>? _images;
   Widget? _view;
 
-  Element(this._assetsPaths);
+  ElementLevel(this._assetsPaths);
 
   Future<Widget> get view async {
     _images ??= _assetsPaths.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
@@ -30,7 +30,7 @@ abstract class Element {
   }
 }
 
-abstract class StackableElement extends Element {
+abstract class StackableElement extends ElementLevel {
   StackableElement(super._assetsPaths);
 
   @override
@@ -54,7 +54,7 @@ class Coin extends StackableElement {
   }
 }
 
-class Ground extends Element {
+class Ground extends ElementLevel {
   Ground._privateConstructor(): super(AssetsPaths.ground);
 
   static Ground? _instance;
@@ -65,7 +65,7 @@ class Ground extends Element {
   }
 }
 
-class Wall extends Element {
+class Wall extends ElementLevel {
   Wall._privateConstructor(): super(AssetsPaths.wall);
 
   static Wall? _instance;

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mirrors/models/global_settings.dart';
 import 'package:mirrors/models/home/home_assets.dart';
 import 'package:mirrors/views/menu/about.dart';
 import 'package:mirrors/views/menu/home.dart';
@@ -22,25 +21,18 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => GlobalSettings(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        routes: {
-          'home': (context) => const Home(),
-          'about': (context) => const About(),
-          'settings': (context) => const Settings(),
-          'play': (context) => ChangeNotifierProvider(
-            create: (context) => HomeAssets(),
-            child: const Level(),
-          ),
-          'random': (context) => const Loading(), // change by random level class 
-        },
-        home: Scaffold(
-          body: ChangeNotifierProvider(
-            create: (context) => HomeAssets(),
-            child: const Home(),
-          ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      routes: {
+        'home': (context) => const Home(),
+        'about': (context) => const About(),
+        'settings': (context) => const Settings(),
+        'play': (context) => const LevelView(1)
+      },
+      home: Scaffold(
+        body: ChangeNotifierProvider(
+          create: (BuildContext context) => HomeAssets(),
+          child: const Home(),
         ),
       ),
     );
