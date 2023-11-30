@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mirrors/models/element.dart';
+import 'package:mirrors/models/game_map.dart';
 import 'package:mirrors/models/home/home_assets.dart';
 import 'package:mirrors/views/level/level.dart';
 import 'package:mirrors/views/menu/loading.dart';
@@ -51,7 +53,13 @@ class Level extends StatelessWidget {
                         Navigator.pushReplacement(
                           context, 
                           MaterialPageRoute(
-                            builder: (context) => LevelView(int.parse(levelNames[index])),
+                            builder: (context) => MultiProvider(
+                              providers: [
+                                ChangeNotifierProvider<GameMap>(create: (context) => GameMap(int.parse(levelNames[index]))),
+                                //ChangeNotifierProvider<Player>(create: (context) => Player(Position(0,0, 3, 3))),
+                              ],
+                              child: LevelView(levelID: int.parse(levelNames[index])),
+                            ),
                           ),
                         );
                       }

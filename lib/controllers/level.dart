@@ -6,8 +6,19 @@ import '../constants.dart';
 import '../models/element.dart';
 import '../views/level/level.dart';
 
-enum Direction { up, down, left, right, none }
+class LevelController {
+  final Player player;
 
+  LevelController(this.player) {
+    //player = Player(Position(0,0));
+  }
+
+  void movePlayer(Direction direction) {
+    // TODO: test if collision
+    player.move(direction);
+  }
+}
+/*
 class LevelController extends StatefulWidget {
   final int levelID;
 
@@ -157,53 +168,6 @@ class _DirectionButtonState extends State<DirectionButton> {
   }
 }
 
-class Player extends ChangeNotifier {
-  final LevelDataManager _levelDataManager;
-  final double _step;  // this is the step between 2 Elements in the LevelView
-  late Offset offset;  // Player is placed on the screen using Offset relative to top left
-  late Position position;
-
-  Player(this._levelDataManager, this._step) {
-    position = _levelDataManager.initialPlayerPosition;
-    offset = Offset(position.x * _step, position.y * _step);
-  }
-
-  bool tryMove(Direction dir) {  // we move only if possible, and if we moved then return true
-    final newPosition = position.translate(dir);
-    if (_levelDataManager.getElementAt(newPosition).runtimeType != Wall) {
-      _move(dir);
-      return true;
-    }
-    return false;
-  }
-
-  void _move(Direction dir) {
-    offset = switch (dir) {
-      Direction.up => offset.translate(0.0, -_step),
-      Direction.down => offset.translate(0.0, _step),
-      Direction.left => offset.translate(-_step, 0.0),
-      Direction.right => offset.translate(_step, 0.0),
-      Direction.none => offset
-    };
-    position = position.translate(dir);
-    notifyListeners();
-  }
-}
-
-class Position {
-  int x, y;
-  Position(this.x, this.y);
-
-  Position _translate(int dx, int dy) => Position(x + dx, y + dy);
-  Position translate(Direction dir) => switch (dir) {
-    Direction.up => _translate(0, -1),
-    Direction.down => _translate(0, 1),
-    Direction.left => _translate(-1, 0),
-    Direction.right => _translate(1, 0),
-    Direction.none => this
-  };
-}
-
 class LevelDataManager {  // singleton
   static LevelDataManager? _instance;
   late final List<String> _levelRows;
@@ -251,4 +215,4 @@ class LevelDataManager {  // singleton
 
   int get width => _levelData[0].length;
   int get height => _levelData.length;
-}
+}*/
