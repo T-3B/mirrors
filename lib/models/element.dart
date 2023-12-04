@@ -48,28 +48,59 @@ abstract class StackableElement extends ElementLevel {
 }
 
 abstract class MovableElement extends StackableElement{
-  final Position position;
+  Position position;
 
   MovableElement(super._assetsPaths, this.position);
 
   void move(Direction direction);
 }
 
+enum RotationDirection{ right, left }
+
+class Mirror extends MovableElement with ChangeNotifier {
+  int angle;
+  Mirror(Position position, this.angle) : super(AssetsPaths.mirror, position);
+  
+  @override
+  void move(Direction direction) {
+    position.translate(direction);
+    notifyListeners();
+  }
+
+  void rotate(RotationDirection direction) {
+    switch(direction) {
+      
+      case RotationDirection.right:
+        angle += 45;
+      case RotationDirection.left:
+        angle -= 45;
+    }
+    notifyListeners();
+  }
+}
+
+class LaserBeam extends ElementLevel {
+  int angle;
+  Position position;
+  LaserBeam(this.position, this.angle) : super(AssetsPaths.laserBeam);
+}
+
 class Player extends MovableElement with ChangeNotifier {
 
-  Player._privateConstructor(Position position): super(AssetsPaths.player, position);
+  Player._privateConstructor(Position p): super(AssetsPaths.player, p) {
+    position = p;
+  }
 
   static Player? _instance;
 
-  factory Player(Position position) {
-    _instance ??= Player._privateConstructor(position);
+  factory Player(Position p) {
+    _instance = Player._privateConstructor(p);
     return _instance!;
   }
 
   @override
   void move(Direction direction) {
     position.translate(direction);
-    print('test : ${position.x} - ${position.y} / ${position.maxX} - ${position.maxY}');
     notifyListeners();
   }
 
@@ -112,6 +143,28 @@ class Wall extends ElementLevel {
   }
 }
 
+class LaserStart extends ElementLevel {
+  LaserStart._privateConstructor(): super(AssetsPaths.laserStart);
+
+  static LaserStart? _instance;
+
+  factory LaserStart() {
+    _instance ??= LaserStart._privateConstructor();
+    return _instance!;
+  }
+}
+
+class LaserEnd extends ElementLevel {
+  LaserEnd._privateConstructor(): super(AssetsPaths.laserEnd);
+
+  static LaserEnd? _instance;
+
+  factory LaserEnd() {
+    _instance ??= LaserEnd._privateConstructor();
+    return _instance!;
+  }
+}
+
 enum Direction { up, down, left, right, none }
 
 class Position {
@@ -120,26 +173,32 @@ class Position {
 
   void _translate(int dx, int dy) {
     x += dx;
-    if(x < 0) x = 0;
-    else if(x > maxX) x = maxX;
+    if(x < 0) {
+      x = 0;
+    } else if(x > maxX) {
+      x = maxX;
+    }
     y += dy;
-    if(y < 0) y = 0;
-    else if(y > maxY) y = maxY;
+    if(y < 0) {
+      y = 0;
+    } else if(y > maxY) {
+      y = maxY;
+    }
   }
 
   void translate(Direction direction) {
     switch(direction) {
       case Direction.up:
-        _translate(0, -1);
+        _translate(-1, 0);
         break;
       case Direction.down:
-        _translate(0, 1);
-        break;
-      case Direction.right:
         _translate(1, 0);
         break;
+      case Direction.right:
+        _translate(0, 1);
+        break;
       case Direction.left:
-        _translate(-1, 0);
+        _translate(0, -1);
         break;
       default:
         break;

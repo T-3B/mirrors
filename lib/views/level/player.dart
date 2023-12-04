@@ -1,26 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:mirrors/controllers/level.dart';
 import 'package:mirrors/models/element.dart';
+// import 'package:mirrors/models/game_map.dart';
 import 'package:provider/provider.dart';
 
 class PlayerView extends StatelessWidget {
-  final Player player;
   final int length;
   final int width;
+  final LevelController controller;
 
-  const PlayerView({super.key, required this.player, required this.length, required this.width});
+  const PlayerView({super.key, required this.controller, required this.length, required this.width});
 
   @override
   Widget build(BuildContext context) {
-    LevelController controller = LevelController(player);
     Size size = MediaQuery.of(context).size;
     return Stack(children: [
       Consumer(builder: (context, Player player, _) {
-        print('t2');
         return Positioned(
-          top: (MediaQuery.of(context).size.height / (length / width)) * player.position.y,
-          left: (size.width - ((size.height / (length / width)) * width) - ((size.width / 2) - (((size.height / (length / width)) * width) / 2))) + (MediaQuery.of(context).size.height / (length / width)) * player.position.x,
-          //bottom: 0,
+          top: (MediaQuery.of(context).size.height / (length / width)) * player.position.x,
+          left: (size.width - ((size.height / (length / width)) * width) - ((size.width / 2) - (((size.height / (length / width)) * width) / 2))) + (MediaQuery.of(context).size.height / (length / width)) * player.position.y,
           child: SizedBox(
             width: MediaQuery.of(context).size.height / (length / width),
             height: MediaQuery.of(context).size.height / (length / width),

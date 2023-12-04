@@ -12,10 +12,12 @@ class GameMap extends ChangeNotifier {
   Position initialPositionPlayer = Position(0, 0, 0, 0);
   int _levelID = 0;
 
-  late List<List<ElementLevel>> levelGrid;
+  late List<List<ElementLevel>> levelGrid = [];
+
+  List<Position> initialMirrorsPosition = [];
 
   factory GameMap(int id) {
-    _map ??= GameMap._privateConstructor(id);
+    _map = GameMap._privateConstructor(id);
     return _map!;
   }
 
@@ -27,38 +29,50 @@ class GameMap extends ChangeNotifier {
   }
 
   Future<void> _parseLevelData(int id) async {
+    isReady = false;
+
     List<String> levelRows = (await rootBundle.loadString('assets/levels/$id.txt')).split('\n');
     
     int initialXPlayer = 0, initialYPlayer = 0;
     int currentRow = 0, currentColumn = 0;
     bool isPlayer = false;
 
-    levelRows.map((row) {
-      List<ElementLevel> tmp = [];
+    for(var row in levelRows) {
+      levelGrid.add([]);
       currentColumn = 0;
-      row.split('').map((char) {
-        switch(char) {
-          case 'P': 
+      for(var cell in row.split('')) {
+        switch(cell) {
+          case 'P':
             isPlayer = true;
             initialYPlayer = currentColumn;
             initialXPlayer = currentRow;
+            levelGrid[levelGrid.length - 1].add(Ground());
+            break;
           case 'G':
-            tmp.add(Ground());
+            levelGrid[levelGrid.length - 1].add(Ground());
             break;
           case 'C':
-            tmp.add(Coin());
+            levelGrid[levelGrid.length - 1].add(Coin());
             break;
           case 'W':
-            tmp.add(Wall());
+            levelGrid[levelGrid.length - 1].add(Wall());
             break;
-          default:
-            tmp.add(Wall());
+          case 'S':
+            levelGrid[levelGrid.length - 1].add(LaserStart());
+            break;
+          case 'E':
+            levelGrid[levelGrid.length - 1].add(LaserEnd());
+            break;
+          case 'M':
+            initialMirrorsPosition.add(Position(currentRow, currentColumn, currentRow, currentColumn));
+            levelGrid[levelGrid.length - 1].add(Ground());
+            break;
         }
         currentColumn++;
-      });
-      levelGrid.add(tmp);
+      }
       currentRow++;
-    });
+    }
+
     if(isPlayer) {
       initialPositionPlayer = Position(initialXPlayer, initialYPlayer, currentColumn, currentRow);
     }
