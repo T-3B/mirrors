@@ -4,7 +4,7 @@ import 'package:mirrors/models/global_settings.dart';
 import 'package:mirrors/models/home/home_assets.dart';
 import 'package:mirrors/views/menu/about.dart';
 import 'package:mirrors/views/menu/home.dart';
-import 'package:mirrors/views/menu/level.dart';
+import 'package:mirrors/views/menu/level_selection.dart';
 import 'package:mirrors/views/menu/loading.dart';
 import 'package:mirrors/views/menu/settings.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +32,7 @@ class MainApp extends StatelessWidget {
           'settings': (context) => const Settings(),
           'play': (context) => ChangeNotifierProvider(
             create: (context) => HomeAssets(),
-            child: const Level(),
+            child: const LevelSelection(),
           ),
           'random': (context) => const Loading(), // change by random level class 
         },

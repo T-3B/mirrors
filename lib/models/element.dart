@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 
 import '../views/animation/sprite_animation.dart';
@@ -168,22 +170,13 @@ class LaserEnd extends ElementLevel {
 enum Direction { up, down, left, right, none }
 
 class Position {
-  int x, y, maxX, maxY;
+  int x, y;
+  final int maxX, maxY;
   Position(this.x, this.y, this.maxX, this.maxY);
 
   void _translate(int dx, int dy) {
-    x += dx;
-    if(x < 0) {
-      x = 0;
-    } else if(x > maxX) {
-      x = maxX;
-    }
-    y += dy;
-    if(y < 0) {
-      y = 0;
-    } else if(y > maxY) {
-      y = maxY;
-    }
+    x = max(0, min(x + dx, maxX));
+    y = max(0, min(y + dy, maxY));
   }
 
   void translate(Direction direction) {

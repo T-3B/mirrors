@@ -5,8 +5,8 @@ import 'package:mirrors/views/level/level.dart';
 import 'package:mirrors/views/menu/loading.dart';
 import 'package:provider/provider.dart';
 
-class Level extends StatelessWidget {
-  const Level({super.key});
+class LevelSelection extends StatelessWidget {
+  const LevelSelection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class Level extends StatelessWidget {
           return const Loading();
         } else {
           List<String> levelNames = [
-            'random',
+            'random'
           ];
           levelNames.addAll(homeAssets.levelNames!);
            
@@ -32,7 +32,7 @@ class Level extends StatelessWidget {
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 100.0,
                   crossAxisSpacing: 20.0,
-                  mainAxisSpacing: 20.0,
+                  mainAxisSpacing: 20.0
                 ),
                 itemCount: levelNames.length,
                 itemBuilder: (context, index) {
@@ -43,41 +43,32 @@ class Level extends StatelessWidget {
                       padding: const EdgeInsets.all(0),
                     ),
                     onPressed: () {
-                      if(levelNames[index] == 'random') {
-                        Navigator.pushReplacementNamed(
-                          context, 
-                          'random',
-                        );
-                      } else {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder:(context) {
-                              return Builder(
-                                builder: (context) {
-                                  return ChangeNotifierProvider(
-                                    create: (context) => GameMap(int.parse(levelNames[index])),
-                                    child: LevelView(levelID: int.parse(levelNames[index])),
-                                  );
-                                },
-                              );
-                            },
-
-                            
-                           
-                          ),
-                        );
-                      }
-                    }, 
+                      final levelID = levelNames[index] == 'random' ? -1 : int.parse(levelNames[index]);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder:(context) {
+                            return Builder(
+                              builder: (context) {
+                                return ChangeNotifierProvider(
+                                  create: (context) => GameMap(levelID),
+                                  child: LevelView(levelID: levelID),
+                                );
+                              }
+                            );
+                          }
+                        )
+                      );
+                    },
                     child: Card(
                       child: Center(
                         child: Text('Level ${levelNames[index]}'),
-                      ),
-                    ),
+                      )
+                    )
                   );
-                },
-              ),
-            ),
+                }
+              )
+            )
           );
         }
       }
