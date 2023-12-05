@@ -43,7 +43,7 @@ class LevelSelection extends StatelessWidget {
                       padding: const EdgeInsets.all(0),
                     ),
                     onPressed: () {
-                      final levelID = levelNames[index] == 'random' ? -1 : int.parse(levelNames[index]);
+                      final levelID = (levelNames[index] == 'random') ? -1 : int.parse(levelNames[index]);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

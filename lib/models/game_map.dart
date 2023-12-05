@@ -10,6 +10,9 @@ class GameMap extends ChangeNotifier {
 
 
   late Map<Position, ElementLevel> levelMap;
+
+  int width = 0, height = 0;
+
   Position initialPlayerPosition = Position(1, 1);
   int _levelID = 0;
   bool isReady = false;
@@ -145,10 +148,12 @@ class GameMap extends ChangeNotifier {
   }
 
   Future<void> _loadLevelData(int levelID) async {
-    if (_levelID <= 0) {
+    if(levelID <= 0) {
       levelMap = _generateRandomLevel();
-    } else if (_levelID != levelID) {
-      levelMap = _parseLevelRows((await rootBundle.loadString('assets/levels/$levelID.txt')).split('\n'));
+    } else if(_levelID != levelID) {
+      levelMap = _parseLevelRows((await rootBundle.loadString('assets/levels/$levelID.txt')).split(':')); // work only on windows
+    } else {
+      levelMap = _generateRandomLevel();
     }
     _levelID = levelID;
     initialPlayerPosition = levelMap.entries.firstWhere((e) => e.value is Player).key;
@@ -157,8 +162,15 @@ class GameMap extends ChangeNotifier {
   }
 
   Map<Position, ElementLevel> _parseLevelRows(List<String> levelRows) {
-    final height = levelRows.length, width = levelRows[0].length;
-    return Map.fromIterable(Iterable.generate(height * width, (i) => Position(i % width, i ~/ width)), value: (pos) => switch (levelRows[pos.y][pos.x]) {
+    height = levelRows.length;
+    width = levelRows[0].length;
+
+    return Map.fromIterable(
+      Iterable.generate(
+        height * width, 
+        (i) => Position((i % width), i ~/ width)
+      ), 
+      value: (pos) => switch (levelRows[pos.y][pos.x]) {
       'C' => Coin(),
       'E' => LaserEnd(),
       'G' => Ground(),

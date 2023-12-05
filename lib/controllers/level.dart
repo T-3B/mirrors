@@ -19,30 +19,30 @@ class LevelController {
   };
 
   void movePlayer(Direction direction) {
-    int tmp = _computeMove(direction);
-    int x = (tmp < 0) ? - (tmp % 2) : tmp % 2 ;
-    int y = tmp ~/ 2;
-    switch(map.levelGrid[player.position.x + x][player.position.y + y]) {
-      case Coin():
-        map.levelGrid[player.position.x + x][player.position.y + y] = Ground();
-        player.move(direction);
-        return;
-      case Ground():
-        for(var m in mirrors) {
-          if(m.position.x == player.position.x + x && m.position.y == player.position.y + y) {
-            if(map.levelGrid[m.position.x + x][m.position.y + y] == Ground()) {
-              m.move(direction);
-              player.move(direction);
-            }
-            return;
-          }
-        }
-        player.move(direction);
-        return;
-      case Wall():
-        return;
-    }
-    return;
+    // int tmp = _computeMove(direction);
+    // int x = (tmp < 0) ? - (tmp % 2) : tmp % 2 ;
+    // int y = tmp ~/ 2;
+    // switch(map.levelGrid[player.position.x + x][player.position.y + y]) {
+    //   case Coin():
+    //     map.levelGrid[player.position.x + x][player.position.y + y] = Ground();
+    //     player.move(direction);
+    //     return;
+    //   case Ground():
+    //     for(var m in mirrors) {
+    //       if(m.position.x == player.position.x + x && m.position.y == player.position.y + y) {
+    //         if(map.levelGrid[m.position.x + x][m.position.y + y] == Ground()) {
+    //           m.move(direction);
+    //           player.move(direction);
+    //         }
+    //         return;
+    //       }
+    //     }
+    //     player.move(direction);
+    //     return;
+    //   case Wall():
+    //     return;
+    // }
+    // return;
   }
 }
 /*
