@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mirrors/controllers/level.dart';
-//import 'package:mirrors/controllers/level_selection.dart';
 import 'package:mirrors/models/element.dart';
 import 'package:mirrors/models/game_map.dart';
 import 'package:mirrors/views/level/mirror.dart';
@@ -27,22 +26,11 @@ class LevelView extends StatelessWidget {
               body: Loading(),
             );
           } else if (snapshot.hasError) {
-            // TODO: throw error
-            return const Text('error');
+            return const Text('error');  // TODO: throw error
           } else {
-            
-            List<Widget> grid = [];
-            for(var row in map.levelGrid) {
-              for(var cell in row) {
-                grid.add(
-                  snapshot.data![cell]!
-                );
-              }
-            }
-            
             int width = map.levelGrid[0].length;
 
-            Player player = Player(Position(map.initialPositionPlayer.x, map.initialPositionPlayer.y, map.levelGrid.length - 1, map.levelGrid[0].length - 1));
+            Player player = Player(Position(map.initialPlayerPosition.x, map.initialPlayerPosition.y, map.levelGrid.length - 1, map.levelGrid[0].length - 1));
 
             List<Mirror> mirrors = [];
 
@@ -95,10 +83,15 @@ class LevelView extends StatelessWidget {
   }
 }
 
-Future<Map<ElementLevel, Widget>> _fetch() async => {
-  Coin(): await Coin().view,
-  Ground(): await Ground().view,
-  Wall(): await Wall().view,
-  LaserStart(): await LaserStart().view,
-  LaserEnd(): await LaserEnd().view,
+Future<Map<Type, Widget>> _fetch() async => {
+  Coin: await Coin().view,
+  Ground: await Ground().view,
+  Wall: await Wall().view,
+  Player: await Ground().view,
+  Mirror: await Ground().view,
+  LaserStart: await Ground().view,
+  LaserBeamVertical: await Ground().view,
+  LaserBeamHorizontal: await Ground().view,
+  LaserBeamCross: await Ground().view,
+  LaserEnd: await LaserEnd().view,
 };
