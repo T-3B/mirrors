@@ -13,6 +13,10 @@ enum AssetsPaths {
   laserEnd(['assets/in_game/laser_end.png', 'assets/in_game/laser_end_red.png']),
   mirror(['assets/in_game/mirror_east_west.png', 'assets/in_game/mirror_south_east.png', 'assets/in_game/mirror_south_north.png', 'assets/in_game/mirror_south_west.png']),
   wall(['assets/in_game/wall.png']),
+  playerUp(['assets/in_game/player_north_1.png', 'assets/in_game/player_north_2.png','assets/in_game/player_north_static.png']),
+  playerDown(['assets/in_game/player_south_1.png', 'assets/in_game/player_south_2.png','assets/in_game/player_south_static.png']),
+  playerRight(['assets/in_game/player_east_1.png', 'assets/in_game/player_east_2.png','assets/in_game/player_east_static.png']),
+  playerLeft(['assets/in_game/player_west_1.png', 'assets/in_game/player_west_2.png','assets/in_game/player_west_static.png']),
   player(['assets/in_game/player_east_1.png', 'assets/in_game/player_east_2.png','assets/in_game/player_east_static.png',
   'assets/in_game/player_north_1.png', 'assets/in_game/player_north_2.png','assets/in_game/player_north_static.png',
   'assets/in_game/player_south_1.png', 'assets/in_game/player_south_2.png','assets/in_game/player_south_static.png',
@@ -46,7 +50,7 @@ class Position {
 
 
 abstract class ElementLevel {
-  final AssetsPaths _assetsPaths;
+  AssetsPaths _assetsPaths;
   List<Image>? _images;
   Widget? _view;
 
@@ -54,67 +58,88 @@ abstract class ElementLevel {
 
   Future<Widget> get view async {
     _images ??= _assetsPaths.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
-    _view ??= _images!.length > 1 ? SpriteAnimation(_images!, const Duration(milliseconds: 300)) : _images![0];
+    _view ??= _images!.length > 1 ? SpriteAnimation(_images!, const Duration(milliseconds: 150)) : _images![0];
     return _view!;
   }
 }
 
-abstract class MovableElement extends ElementLevel with ChangeNotifier {
-  Position position;
+// abstract class MovableElement extends ElementLevel with ChangeNotifier {
+//   Position position;
 
-  MovableElement(super._assetsPaths, this.position);
+//   MovableElement(super._assetsPaths, this.position);
 
-  void move(Direction dir) {
-    position = position.translate(dir);
-    notifyListeners();
-  }
-}
+//   void move(Direction dir) {
+//     position = position.translate(dir);
+//     notifyListeners();
+//   }
+// }
 
-class Mirror extends MovableElement  {
-  late double angle;
-  Mirror(Position position, this.angle) : super(AssetsPaths.mirror, position);
-  Mirror.fromDirections(Position position, Direction dir1, Direction dir2) : super(AssetsPaths.mirror, position) {
-    double dir2Angle(Direction dir) => switch (dir) {
+class Mirror extends ElementLevel with ChangeNotifier {
+  double _angle = 0;
+  Mirror(int clockwiseTimes) : super(AssetsPaths.mirror) {};
+  Mirror.fromDirections(Direction dir1, Direction dir2) : super(AssetsPaths.mirror) {
+    double dir2Angle(Direction dir) => switch(dir) {
       Direction.up => pi / 2,
       Direction.down => 3 * pi / 2,
       Direction.left => pi,
       _ => 0,
     };
 
-    angle = dir2Angle(dir1) + dir2Angle(dir2) / 2;
+    _angle = dir2Angle(dir1) + dir2Angle(dir2) / 2;
   }
 
   void rotate(RotationDirection rot) {
     switch (rot) {
       case RotationDirection.clockwise:
-        angle += pi / 4;
+        _angle += pi / 4;
       case RotationDirection.counterclockwise:
-        angle -= pi / 4;
+        _angle -= pi / 4;
     }
     notifyListeners();
   }
+
+  // return the reflected Direction of the input Direction (using the Mirror angle); Direction.none reflected beam overlaps the input (e.g. inDir == right; thus reflected to outDir == left)
+  Direction reflectedDir(Direction inDir) {
+    return Direction.up;
+  }
 }
 
-class Player extends MovableElement {
-  Player._privateConstructor(Position p): super(AssetsPaths.player, p);
+class Player extends ElementLevel {// with ChangeNotifier {
+  Player._privateConstructor(): super(AssetsPaths.player);
 
   static Player? _instance;
 
-  factory Player(Position p) {
-    _instance ??= Player._privateConstructor(p);
+  factory Player() {
+    _instance ??= Player._privateConstructor();
     return _instance!;
-  }
-
-  @override
-  void move(Direction dir) {  // TODO set Player sprite when moving (or perhaps in PlayerView?)
-    position = position.translate(dir);
-    notifyListeners();
   }
 
   @override
   void dispose() {
 
   }
+
+  static Future<Widget> getViewFacing(Direction direction) async {
+    AssetsPaths aPath = AssetsPaths.player;
+    List<Image>? image;
+    Widget? view;
+    switch(direction) {
+      case Direction.up:
+        aPath = AssetsPaths.playerUp;
+      case Direction.down:
+        aPath = AssetsPaths.playerDown;
+      case Direction.left:
+        aPath = AssetsPaths.playerLeft;
+      case Direction.right:
+        aPath = AssetsPaths.playerRight;
+      case Direction.none:
+        // _assetsPaths = AssetsPaths.ground;
+    }
+    image ??= aPath.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
+    view ??= image!.length > 1 ? SpriteAnimation(image!, const Duration(milliseconds: 300)) : image![0];
+    return view!;
+  }
+
 }
 
 class Coin extends ElementLevel {
