@@ -6,6 +6,7 @@ class GlobalSettings extends ChangeNotifier {
 
   bool _volume = true;
   bool _vibration = true;
+  bool _inApp = true;
 
   factory GlobalSettings() {
     return _globalSettings;
@@ -19,6 +20,8 @@ class GlobalSettings extends ChangeNotifier {
 
   bool get vibration => _vibration;
 
+  bool get inApp => _inApp;
+
   set volume(bool v) {
     _volume = v;
     _saveSettings();
@@ -28,6 +31,11 @@ class GlobalSettings extends ChangeNotifier {
   set vibration(bool v) {
     _vibration = v;
     _saveSettings();
+    notifyListeners();
+  }
+
+  set inApp(bool v) {
+    _inApp = v;
     notifyListeners();
   }
 

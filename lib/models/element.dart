@@ -11,7 +11,8 @@ enum AssetsPaths {
   laserBeamVertical(['assets/in_game/laser_vertical_red1.png', 'assets/in_game/laser_vertical_red2.png']),
   laserStart(['assets/in_game/laser_start_red.png']),
   laserEnd(['assets/in_game/laser_end.png', 'assets/in_game/laser_end_red.png']),
-  mirror(['assets/in_game/mirror_east_west.png', 'assets/in_game/mirror_south_east.png', 'assets/in_game/mirror_south_north.png', 'assets/in_game/mirror_south_west.png']),
+  mirrorEmpty(['assets/in_game/empty_mirror.png']),
+  mirrorFull(['assets/in_game/laser_mirror.png']),
   wall(['assets/in_game/wall.png']),
   playerUp(['assets/in_game/player_north_1.png', 'assets/in_game/player_north_2.png','assets/in_game/player_north_static.png']),
   playerDown(['assets/in_game/player_south_1.png', 'assets/in_game/player_south_2.png','assets/in_game/player_south_static.png']),
@@ -82,8 +83,8 @@ abstract class ElementLevel {
 
 class Mirror extends ElementLevel with ChangeNotifier {
   late int clockwiseTimes;
-  Mirror(int clockwiseTimes) : super(AssetsPaths.mirror) { this.clockwiseTimes = clockwiseTimes % 4; }
-  Mirror.fromDirections(Direction dir1, Direction dir2) : super(AssetsPaths.mirror) {  // These 2 Directions are either the same (e.g. up up == mirror '—') or "neighbor" (e.g. right down == mirror '/')
+  Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) { this.clockwiseTimes = clockwiseTimes % 4; }
+  Mirror.fromDirections(Direction dir1, Direction dir2) : super(AssetsPaths.mirrorEmpty) {  // These 2 Directions are either the same (e.g. up up == mirror '—') or "neighbor" (e.g. right down == mirror '/')
     int dir2clocks(Direction dir) => switch(dir) {
       Direction.up => 2,
       Direction.down => -2,
@@ -129,6 +130,13 @@ class Mirror extends ElementLevel with ChangeNotifier {
         return Direction.none;  // for case 0 and 2, mirror is either | or —
     }
   }
+
+  static Future<Widget> getViewFacing(bool isOn) async {
+    AssetsPaths aPath = (isOn) ? AssetsPaths.mirrorFull : AssetsPaths.mirrorEmpty;
+    final image = aPath.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
+    return image.length > 1 ? SpriteAnimation(image, const Duration(milliseconds: 300)) : image[0];
+  }
+
 }
 
 class Player extends ElementLevel {// with ChangeNotifier {

@@ -27,7 +27,10 @@ class MainApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         routes: {
-          'home': (context) => const Home(),
+          'home': (context) => ChangeNotifierProvider(
+            create: (context) => HomeAssets(),
+            child: const Home(),
+          ),
           'about': (context) => const About(),
           'settings': (context) => const Settings(),
           'play': (context) => ChangeNotifierProvider(

@@ -4,7 +4,19 @@ import '../models/element.dart';
 class LevelController {
   final GameMap map;
 
+  late bool _isGameRunning;
+  
+  set isGameRunning(bool value) {
+    _isGameRunning = value;
+    map.notifyAllListeners();
+  }
+
+  bool get isGameRunning {
+    return _isGameRunning;
+  }
+
   LevelController(this.map) {
+    _isGameRunning = true;
     //player = Player(Position(0,0));
   }
 
@@ -55,28 +67,23 @@ class LevelController {
         return;
     }
     return;
+  }
 
-    // switch(map.levelGrid[player.position.x + x][player.position.y + y]) {
-    //   case Coin():
-    //     map.levelGrid[player.position.x + x][player.position.y + y] = Ground();
-    //     player.move(direction);
-    //     return;
-    //   case Ground():
-    //     for(var m in mirrors) {
-    //       if(m.position.x == player.position.x + x && m.position.y == player.position.y + y) {
-    //         if(map.levelGrid[m.position.x + x][m.position.y + y] == Ground()) {
-    //           m.move(direction);
-    //           player.move(direction);
-    //         }
-    //         return;
-    //       }
-    //     }
-    //     player.move(direction);
-    //     return;
-    //   case Wall():
-    //     return;
-    // }
-    // return;
+  void rotateMirror(RotationDirection rotationDirection) {
+    Position playerPosition = map.levelMap.entries.firstWhere((e) => e.value is Player).key;
+
+    Position cursorPosition = switch(map.playerFacing) {
+      Direction.up => Position(playerPosition.x, playerPosition.y - 1),
+      Direction.down => Position(playerPosition.x, playerPosition.y + 1),
+      Direction.left => Position(playerPosition.x - 1, playerPosition.y),
+      Direction.right => Position(playerPosition.x + 1, playerPosition.y),
+      Direction.none => Position(playerPosition.x, playerPosition.y),
+    };
+
+    if(map.levelMap[cursorPosition] is Mirror) {
+      (map.levelMap[cursorPosition] as Mirror).rotate(rotationDirection);
+      map.notifyAllListeners();
+    }
   }
 }
 /*

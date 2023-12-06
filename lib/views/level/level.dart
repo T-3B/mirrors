@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mirrors/controllers/level.dart';
 import 'package:mirrors/models/element.dart';
 import 'package:mirrors/models/game_map.dart';
-import 'package:mirrors/views/level/player.dart';
+import 'package:mirrors/views/animation/sprite_animation.dart';
+import 'package:mirrors/views/level/overlay_level.dart';
 import 'package:mirrors/views/menu/common.dart';
 import 'package:provider/provider.dart';
 
@@ -52,15 +53,27 @@ class LevelView extends StatelessWidget {
                         child: SizedBox(
                           width: sizeOneCell,
                           height: sizeOneCell,
-                          child: Container(
-                            color: Colors.green,
-                          ),
+                          child: Transform.rotate(
+                            angle: (m.value as Mirror).angle,
+                            child: (snapshot.data![Mirror])[0],
+                          )
+                          // Container(
+                          //   color: Colors.green,
+                          // ),
                         ),
                       )
                     );
                   }
                   
                   Position playerPosition = map.levelMap.entries.firstWhere((e) => e.value is Player).key;
+
+                  Position cursorPosition = switch(map.playerFacing) {
+                    Direction.up => Position(playerPosition.x, playerPosition.y - 1),
+                    Direction.down => Position(playerPosition.x, playerPosition.y + 1),
+                    Direction.left => Position(playerPosition.x - 1, playerPosition.y),
+                    Direction.right => Position(playerPosition.x + 1, playerPosition.y),
+                    Direction.none => Position(playerPosition.x, playerPosition.y),
+                  };
 
                   LevelController controller = LevelController(map);
 
@@ -108,7 +121,20 @@ class LevelView extends StatelessWidget {
                           ),
                         ),
 
-                        PlayerView(controller: controller, height: height, width: width,),
+                        Positioned(
+                          top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * cursorPosition.y),
+                          left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * cursorPosition.x),
+                          child: SizedBox(
+                            width: sizeOneCell,
+                            height: sizeOneCell,
+                            child: const SpriteAnimation([
+                              Image(image: AssetImage('assets/in_game/cursor_action_on_map_2.png'),),
+                              Image(image: AssetImage('assets/in_game/cursor_action_on_map_1.png'),),
+                            ], Duration(milliseconds: 300)),
+                          )
+                        ),
+
+                        OverlayLevel(controller: controller,),
                       ] + mirrorsView,
                     ),
                   );
@@ -125,7 +151,7 @@ Future<Map<Type, dynamic>> _fetch() async => {
   Ground: await Ground().view,
   Wall: await Wall().view,
   Player: await Direction.values.map((e) async => await Player.getViewFacing(e)).wait,
-  Mirror: await Ground().view,  // TODO
+  Mirror: [await Mirror.getViewFacing(true), await Mirror.getViewFacing(false)],
   LaserStart: await LaserStart(Direction.up).view,
   LaserBeamVertical: await LaserBeamVertical().view,
   LaserBeamHorizontal: await LaserBeamHorizontal().view,
