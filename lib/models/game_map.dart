@@ -21,25 +21,6 @@ class GameMap extends ChangeNotifier {
 
   Map<Position, ElementLevel> get levelMap => _levelMap;
 
-  set levelMap(Map<Position, ElementLevel> value) {
-    _levelMap = value;
-    notifyListeners();
-  }
-
-  void notifyAllListeners() {
-    notifyListeners();
-  }
-
-  int getPlayerFacingAsInt() {
-    return switch(playerFacing) {
-      Direction.up => 0,
-      Direction.down => 1,
-      Direction.left => 2,
-      Direction.right => 3,
-      Direction.none => 4,
-    };
-  }
-
   factory GameMap(int id) {
     _map = GameMap._privateConstructor(id);
     return _map!;
@@ -48,6 +29,26 @@ class GameMap extends ChangeNotifier {
   GameMap._privateConstructor(int id) {
     _loadLevelData(id);
   }
+
+  set levelMap(Map<Position, ElementLevel> value) {
+    _levelMap = value;
+    notifyListeners();
+  }
+  Position get cursorPosition {
+    return initialPlayerPosition;
+  }
+
+  void notifyAllListeners() {  // TODO useful code ?
+    notifyListeners();
+  }
+
+  int getPlayerFacingAsInt() => switch(playerFacing) {
+    Direction.up => 0,
+    Direction.down => 1,
+    Direction.left => 2,
+    Direction.right => 3,
+    Direction.none => 4,
+  };
 
   // will remove each Position from groundsNonVisited that can be reached from Position `pos`
   void _visitGroundsFrom(List<Position> groundsNonVisited, Position pos) {

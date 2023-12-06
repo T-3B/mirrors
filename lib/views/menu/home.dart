@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 class Home extends StatefulWidget {
   const Home({super.key});
   @override
-  _HomeState createState() => _HomeState();
+  State createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
