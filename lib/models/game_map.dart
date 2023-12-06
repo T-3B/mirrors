@@ -13,7 +13,8 @@ class GameMap extends ChangeNotifier {
   Direction playerFacing = Direction.down;
   int width = 0, height = 0;
 
-  Position initialPlayerPosition = Position(1, 1);
+  Position _initialPlayerPosition = Position(1, 1);
+  
   int _levelID = 0;
   bool isReady = false;
 
@@ -34,8 +35,11 @@ class GameMap extends ChangeNotifier {
     _levelMap = value;
     notifyListeners();
   }
-  Position get cursorPosition {
-    return initialPlayerPosition;
+  Position get initialPlayerPosition => _initialPlayerPosition;
+  Position get playerPosition => levelMap.entries.firstWhere((e) => e.value is Player).key;
+  List<Position> get mirrorsNeighborsPositions {
+    final playerPos = playerPosition;
+    return levelMap.keys.where((e) => e.isNeighborOf(playerPos) && levelMap[e] is Mirror).toList();
   }
 
   void notifyAllListeners() {  // TODO useful code ?
@@ -211,7 +215,7 @@ class GameMap extends ChangeNotifier {
       _levelMap = _generateRandomLevel();
     }
     _levelID = levelID;
-    initialPlayerPosition = _levelMap.entries.firstWhere((e) => e.value is Player).key;
+    _initialPlayerPosition = _levelMap.entries.firstWhere((e) => e.value is Player).key;
     initialMirrorsPosition = _levelMap.entries.where((e) => e.value is Mirror).map((e) => e.key).toList();
     isReady = true;
     notifyListeners();

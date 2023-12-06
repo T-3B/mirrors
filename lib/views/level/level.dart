@@ -75,7 +75,7 @@ class LevelView extends StatelessWidget {
                 List<Widget> laserBeamCrossView = [];
 
                 for (var c in map.levelMap.entries.where((element) => element.value is LaserBeamCross)) {
-                  coinView.add(Positioned(
+                  coinView.add(Positioned(  // TODO c is not a coin (which we add in coinView)
                     top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * c.key.y),
                     left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * c.key.x),
                     child: SizedBox(
@@ -130,7 +130,8 @@ class LevelView extends StatelessWidget {
 
                 // Position endPosition = map.levelMap.entries.firstWhere((e) => e.value is LaserEnd).key;
 
-                Position playerPosition = map.levelMap.entries.firstWhere((e) => e.value is Player).key;
+                final playerPosition = map.playerPosition;
+                final mirrorsNeighborsPositions = map.mirrorsNeighborsPositions;
 
                 Position cursorPosition = switch (map.playerFacing) {
                   Direction.up => Position(playerPosition.x, playerPosition.y - 1),

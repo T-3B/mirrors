@@ -78,12 +78,15 @@ class Position {
 
   Position _translate(int dx, int dy) => Position(x + dx, y + dy);
   Position translate(Direction dir) => switch (dir) {
-        Direction.up => _translate(0, -1),
-        Direction.down => _translate(0, 1),
-        Direction.left => _translate(-1, 0),
-        Direction.right => _translate(1, 0),
-        Direction.none => this
-      };
+    Direction.up => _translate(0, -1),
+    Direction.down => _translate(0, 1),
+    Direction.left => _translate(-1, 0),
+    Direction.right => _translate(1, 0),
+    Direction.none => this
+  };
+
+  bool isNeighborOf(Position other) =>  // the 8 Positions around this are considered neighbors
+      (x - other.x).abs() <= 1 && (y - other.y).abs() <= 1;
 }
 
 abstract class ElementLevel {
@@ -94,45 +97,28 @@ abstract class ElementLevel {
   ElementLevel(this._assetsPaths);
 
   Future<Widget> get view async {
-    _images ??= _assetsPaths.paths
-        .map((e) => Image(image: AssetImage(e), fit: BoxFit.contain))
-        .toList();
-    _view ??= _images!.length > 1
-        ? SpriteAnimation(_images!, const Duration(milliseconds: 150))
-        : _images![0];
+    _images ??= _assetsPaths.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
+    _view ??= _images!.length > 1 ? SpriteAnimation(_images!, const Duration(milliseconds: 150)) : _images![0];
     return _view!;
   }
 }
-
-// abstract class MovableElement extends ElementLevel with ChangeNotifier {
-//   Position position;
-
-//   MovableElement(super._assetsPaths, this.position);
-
-//   void move(Direction dir) {
-//     position = position.translate(dir);
-//     notifyListeners();
-//   }
-// }
 
 class Mirror extends ElementLevel with ChangeNotifier {
   late int _clockwiseTimes;
   bool isLaserTouching = false;
 
-  Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) {
+  Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) {  // clockwiseTimes == 0 => vertical '|' Mirror
     _clockwiseTimes = clockwiseTimes % 4;
-  } // clockwiseTimes == 0 => vertical '|' Mirror
+  }
 
   double get angle => _clockwiseTimes * pi / 4;
 
   void rotate(RotationDirection rot) {
     isLaserTouching = false;
-    switch (rot) {
-      case RotationDirection.clockwise:
-        _clockwiseTimes = min(_clockwiseTimes + 1, 3);
-      case RotationDirection.counterclockwise:
-        _clockwiseTimes = max(_clockwiseTimes - 1, 0);
-    }
+    _clockwiseTimes = switch (rot) {
+      RotationDirection.clockwise => min(_clockwiseTimes + 1, 3),
+      RotationDirection.counterclockwise => max(_clockwiseTimes - 1, 0),
+    };
     notifyListeners();
   }
 
@@ -165,19 +151,14 @@ class Mirror extends ElementLevel with ChangeNotifier {
   }
 
   static Future<Widget> getViewFacing(bool isOn) async {
-    AssetsPaths aPath =
-        (isOn) ? AssetsPaths.mirrorFull : AssetsPaths.mirrorEmpty;
-    final image = aPath.paths
-        .map((e) => Image(image: AssetImage(e), fit: BoxFit.contain))
-        .toList();
-    return image.length > 1
-        ? SpriteAnimation(image, const Duration(milliseconds: 300))
-        : image[0];
+    AssetsPaths aPath = (isOn) ? AssetsPaths.mirrorFull : AssetsPaths.mirrorEmpty;
+    final image = aPath.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
+    return image.length > 1 ? SpriteAnimation(image, const Duration(milliseconds: 300)) : image[0];
   }
 }
 
 class Player extends ElementLevel {
-  // with ChangeNotifier {
+  // with ChangeNotifier {  // TODO
   Player._privateConstructor() : super(AssetsPaths.player);
 
   static Player? _instance;
@@ -198,12 +179,8 @@ class Player extends ElementLevel {
       Direction.right => AssetsPaths.playerRight,
       Direction.none => AssetsPaths.player
     };
-    final image = aPath.paths
-        .map((e) => Image(image: AssetImage(e), fit: BoxFit.contain))
-        .toList();
-    return image.length > 1
-        ? SpriteAnimation(image, const Duration(milliseconds: 300))
-        : image[0];
+    final image = aPath.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
+    return image.length > 1 ? SpriteAnimation(image, const Duration(milliseconds: 300)) : image[0];
   }
 
   @override
@@ -250,8 +227,7 @@ class LaserStart extends ElementLevel {
 }
 
 class LaserBeamVertical extends ElementLevel {
-  LaserBeamVertical._privateConstructor()
-      : super(AssetsPaths.laserBeamVertical);
+  LaserBeamVertical._privateConstructor() : super(AssetsPaths.laserBeamVertical);
 
   static LaserBeamVertical? _instance;
 
@@ -262,8 +238,7 @@ class LaserBeamVertical extends ElementLevel {
 }
 
 class LaserBeamHorizontal extends ElementLevel {
-  LaserBeamHorizontal._privateConstructor()
-      : super(AssetsPaths.laserBeamVertical);
+  LaserBeamHorizontal._privateConstructor() : super(AssetsPaths.laserBeamVertical);
 
   static LaserBeamHorizontal? _instance;
 
@@ -273,8 +248,7 @@ class LaserBeamHorizontal extends ElementLevel {
   }
 
   @override
-  Future<Widget> get view async =>
-      Transform.rotate(angle: pi / 2, child: await LaserBeamVertical().view);
+  Future<Widget> get view async => Transform.rotate(angle: pi / 2, child: await LaserBeamVertical().view);
 }
 
 class LaserBeamCross extends ElementLevel {
@@ -289,10 +263,7 @@ class LaserBeamCross extends ElementLevel {
   }
 
   @override
-  Future<Widget> get view async => Stack(fit: StackFit.expand, children: [
-        await LaserBeamVertical().view,
-        await LaserBeamHorizontal().view
-      ]);
+  Future<Widget> get view async => Stack(fit: StackFit.expand, children: [await LaserBeamVertical().view, await LaserBeamHorizontal().view]);
 }
 
 class LaserEnd extends ElementLevel {
