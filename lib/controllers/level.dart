@@ -63,12 +63,13 @@ class LevelController {
           map.notifyAllListeners();
           break;
         case Coin:
-          // do something ?
+          map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
+          map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
+          map.notifyAllListeners();
+          return;
         case LaserBeamCross:
         case LaserBeamHorizontal:
         case LaserBeamVertical:
-          // kill player
-          print('1');
           map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
           map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
           map.isLose = true;
@@ -79,8 +80,6 @@ class LevelController {
           map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
           _rewriteLaser();
           map.notifyAllListeners();
-
-          //player.move(direction);
           return;
         default:
           print('default');

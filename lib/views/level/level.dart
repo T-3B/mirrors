@@ -35,6 +35,18 @@ class LevelView extends StatelessWidget {
                 )
               ],
             );
+          } else if(map.isWin) {
+            return AlertDialog(
+              title: const Text('You Win'),
+              actions: [
+                TextButton(
+                  child: const Text('Go back to main menu'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
           }
           return FutureBuilder(
             future: _fetch(),

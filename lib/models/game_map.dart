@@ -15,6 +15,17 @@ class GameMap extends ChangeNotifier {
 
   bool _isLose = false;
 
+  bool _isWin = false;
+
+  set isWin(bool value) {
+    _isWin = value;
+    notifyListeners();
+  }
+
+  bool get isWin {
+    return _isWin;
+  }
+
   set isLose(bool value) {
     _isLose = value;
     notifyListeners();
@@ -141,9 +152,12 @@ class GameMap extends ChangeNotifier {
   }
 
   void placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
-    while (grid[pos] is Ground || grid[pos] is LaserBeamHorizontal || grid[pos] is LaserBeamVertical) {
+    while (grid[pos] is Ground || grid[pos] is LaserBeamHorizontal || grid[pos] is LaserBeamVertical || grid[pos] is Coin) {
       grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
       pos = pos.translate(dir);
+    }
+    if(grid[pos] is LaserEnd) {
+      _isWin = true;
     }
     if (grid[pos] is Mirror) {
       final nextDir = (grid[pos] as Mirror).reflectedDir(dir);
