@@ -62,7 +62,7 @@ class LevelSelection extends StatelessWidget {
                     },
                     child: Card(
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(2.0),
                         child: Stack(
                           children: [
                             Center(
@@ -71,7 +71,7 @@ class LevelSelection extends StatelessWidget {
                             Align(
                               alignment: Alignment.bottomCenter,
                               child: SizedBox(
-                                height: 30,
+                                height: 40,
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: List.generate(
@@ -82,8 +82,8 @@ class LevelSelection extends StatelessWidget {
                                                     'assets/in_game/coin_1.png')
                                                 : const AssetImage(
                                                     'assets/in_game/coin_grey.png'),
-                                            width: 30,
-                                            height: 30,
+                                            width: 40,
+                                            height: 40,
                                           )),
                                 ),
                               ),
