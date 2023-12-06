@@ -158,9 +158,31 @@ class LevelView extends StatelessWidget {
                     ));
                   }
 
-                  Position endPosition = map.levelMap.entries
-                      .firstWhere((e) => e.value is LaserEnd)
-                      .key;
+                  List<Widget> laserEndView = [];
+
+                  for (var c in map.levelMap.entries
+                      .where((element) => element.value is LaserEnd)
+                      .toList()) {
+                    coinView.add(Positioned(
+                      top: ((MediaQuery.of(context).size.height -
+                                  (sizeOneCell * height)) /
+                              2) +
+                          (sizeOneCell * c.key.y),
+                      left: ((MediaQuery.of(context).size.width -
+                                  (sizeOneCell * width)) /
+                              2) +
+                          (sizeOneCell * c.key.x),
+                      child: SizedBox(
+                        width: sizeOneCell,
+                        height: sizeOneCell,
+                        child: snapshot.data![LaserEnd],
+                      ),
+                    ));
+                  }
+
+                  // Position endPosition = map.levelMap.entries
+                  //     .firstWhere((e) => e.value is LaserEnd)
+                  //     .key;
 
                   Position playerPosition = map.levelMap.entries
                       .firstWhere((e) => e.value is Player)
@@ -265,27 +287,28 @@ class LevelView extends StatelessWidget {
                                     ),
                                   ], Duration(milliseconds: 300)),
                                 )),
-                            Positioned(
-                              top: ((MediaQuery.of(context).size.height -
-                                          (sizeOneCell * height)) /
-                                      2) +
-                                  (sizeOneCell * endPosition.y),
-                              left: ((MediaQuery.of(context).size.width -
-                                          (sizeOneCell * width)) /
-                                      2) +
-                                  (sizeOneCell * endPosition.x),
-                              child: SizedBox(
-                                width: sizeOneCell,
-                                height: sizeOneCell,
-                                child: snapshot.data![LaserEnd],
-                              ),
-                            ),
+                            // Positioned(
+                            //   top: ((MediaQuery.of(context).size.height -
+                            //               (sizeOneCell * height)) /
+                            //           2) +
+                            //       (sizeOneCell * endPosition.y),
+                            //   left: ((MediaQuery.of(context).size.width -
+                            //               (sizeOneCell * width)) /
+                            //           2) +
+                            //       (sizeOneCell * endPosition.x),
+                            //   child: SizedBox(
+                            //     width: sizeOneCell,
+                            //     height: sizeOneCell,
+                            //     child: snapshot.data![LaserEnd],
+                            //   ),
+                            // ),
                           ] +
                           mirrorsView +
                           coinView +
                           laserBeamHorizontalView +
                           laserBeamVerticalView +
                           laserBeamCrossView +
+                          laserEndView +
                           <Widget>[
                             OverlayLevel(
                               controller: controller,

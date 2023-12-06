@@ -197,7 +197,6 @@ class GameMap extends ChangeNotifier {
 
     // ----------------- LaserStart, Beam, End + Mirrors ------------------------------------------------------
     // while more than half of the map is ground, continue to add laser starts
-    exitLaserCreation:
     while (grid.values.whereType<Ground>().length * 4 > grid.length) {
       final laserDirs = [
         Direction.up,
@@ -222,14 +221,16 @@ class GameMap extends ChangeNotifier {
               dir,
               rand.nextInt(3) +
                   3); // each laser beam path has between 3 and 3 corners between start and end
-          if (isFeasible) {
-            break exitLaserCreation;
-          } else {
+          if (!isFeasible) {
             grid[laserStartPos] = Ground();
+          } else {
+            break outerLoop;
           }
         }
       }
-      break;
+      if (grid.values.whereType<LaserEnd>().length == 2) {
+        break;
+      }
     }
 
     // remove the lasers from the grid (put a Ground()), so we will rotate randomly mirrors and then re-add the lasers
