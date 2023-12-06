@@ -13,6 +13,28 @@ class GameMap extends ChangeNotifier {
   Direction playerFacing = Direction.down;
   int width = 0, height = 0;
 
+  bool _isLose = false;
+
+  bool _isWin = false;
+
+  set isWin(bool value) {
+    _isWin = value;
+    notifyListeners();
+  }
+
+  bool get isWin {
+    return _isWin;
+  }
+
+  set isLose(bool value) {
+    _isLose = value;
+    notifyListeners();
+  }
+
+  bool get isLose {
+    return _isLose;
+  }
+
   Position _initialPlayerPosition = Position(1, 1);
   Position _playerLastPosition = Position(-1, -1);
   List<Position> _mirrorsNeighborsOfPlayer = [];
@@ -130,9 +152,12 @@ class GameMap extends ChangeNotifier {
   }
 
   void placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
-    while (grid[pos] is Ground || grid[pos] is LaserBeamHorizontal || grid[pos] is LaserBeamVertical) {
+    while (grid[pos] is Ground || grid[pos] is LaserBeamHorizontal || grid[pos] is LaserBeamVertical || grid[pos] is Coin) {
       grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
       pos = pos.translate(dir);
+    }
+    if(grid[pos] is LaserEnd) {
+      _isWin = true;
     }
     if (grid[pos] is Mirror) {
       final nextDir = (grid[pos] as Mirror).reflectedDir(dir);
@@ -221,6 +246,14 @@ class GameMap extends ChangeNotifier {
       _levelMap = _generateRandomLevel();
     } else if(_levelID != levelID) {
       _levelMap = _parseLevelRows(const LineSplitter().convert(await rootBundle.loadString('assets/levels/$levelID.txt')));
+      levelMap.entries.where((e) => e.value is LaserBeamCross || e.value is LaserBeamHorizontal || e.value is LaserBeamVertical).forEach((e) { levelMap[e.key] = Ground(); });
+
+      //re-add lasers
+      final laserStarts = levelMap.entries.where((e) => e.value is LaserStart);
+      for (final e in laserStarts) {
+        placeLasersFrom(levelMap, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
+      }
+      
     } else {
       _levelMap = _generateRandomLevel();
     }

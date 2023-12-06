@@ -23,6 +23,31 @@ class LevelView extends StatelessWidget {
         if (!map.isReady) {
           return const Loading();
         } else {
+          if(map.isLose) {
+            return AlertDialog(
+              title: const Text('You died'),
+              actions: [
+                TextButton(
+                  child: const Text('Go back to main menu'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          } else if(map.isWin) {
+            return AlertDialog(
+              title: const Text('You Win'),
+              actions: [
+                TextButton(
+                  child: const Text('Go back to main menu'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            );
+          }
           return FutureBuilder(
             future: _fetch(),
             builder: (context, snapshot) {
@@ -33,6 +58,7 @@ class LevelView extends StatelessWidget {
               } else if (snapshot.hasError) {
                 return const Text('error'); // TODO: throw error
               } else {
+
                 int width = map.width;
                 int height = map.height;
 
@@ -184,28 +210,16 @@ class LevelView extends StatelessWidget {
                               Image(image: AssetImage('assets/in_game/cursor_action_on_map_1.png')),
                             ], Duration(milliseconds: 300)),
                           )),
-                      // Positioned(
-                      //   top: ((MediaQuery.of(context).size.height -
-                      //               (sizeOneCell * height)) /
-                      //           2) +
-                      //       (sizeOneCell * endPosition.y),
-                      //   left: ((MediaQuery.of(context).size.width -
-                      //               (sizeOneCell * width)) /
-                      //           2) +
-                      //       (sizeOneCell * endPosition.x),
-                      //   child: SizedBox(
-                      //     width: sizeOneCell,
-                      //     height: sizeOneCell,
-                      //     child: snapshot.data![LaserEnd],
-                      //   ),
-                      // ),
                     ] + mirrorsView + coinView + laserBeamHorizontalView + laserBeamVerticalView +
-                        laserBeamCrossView + laserEndView + <Widget>[OverlayLevel(controller: controller)]
+                        laserBeamCrossView + laserEndView + <Widget>[
+                          OverlayLevel(controller: controller),
+                    ]
                   ),
                 );
               }
             }
           );
+          
         }
       },
     );
