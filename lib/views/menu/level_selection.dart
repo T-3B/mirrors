@@ -25,7 +25,7 @@ class LevelSelection extends StatelessWidget {
               title: const Text('Levels'),
               backgroundColor: Colors.red,
             ),
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.grey,
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.builder(

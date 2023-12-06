@@ -39,14 +39,19 @@ class LevelView extends StatelessWidget {
 
                   List<Widget> mirrorsView = [];
 
+                  double sizeOneCell = (MediaQuery.of(context).size.height / height);
+                  if(sizeOneCell > (MediaQuery.of(context).size.width / width)) {
+                    sizeOneCell = (MediaQuery.of(context).size.width / width);
+                  }
+
                   for(var m in mirrors) {
                     mirrorsView.add(
                       Positioned(
-                        top: (MediaQuery.of(context).size.height / height) * m.key.y,
-                        left: ((MediaQuery.of(context).size.width - ((MediaQuery.of(context).size.height / height) * width)) / 2) + ((MediaQuery.of(context).size.height / height) * m.key.x),
+                        top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * m.key.y),
+                        left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * m.key.x),
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.height / height,
-                          height: MediaQuery.of(context).size.height / height,
+                          width: sizeOneCell,
+                          height: sizeOneCell,
                           child: Container(
                             color: Colors.green,
                           ),
@@ -69,7 +74,8 @@ class LevelView extends StatelessWidget {
                           right: 0,
                           child: Center(
                             child: SizedBox(
-                              width: (MediaQuery.of(context).size.height / height) * width,
+                              width: sizeOneCell * width,
+                              height: sizeOneCell * height,
                               child: GridView.builder(
                                 gridDelegate:
                                     SliverGridDelegateWithFixedCrossAxisCount(
@@ -93,11 +99,11 @@ class LevelView extends StatelessWidget {
                         ),
                         
                         Positioned(
-                          top: (MediaQuery.of(context).size.height / height) * playerPosition.y,
-                          left: ((MediaQuery.of(context).size.width - ((MediaQuery.of(context).size.height / height) * width)) / 2) + ((MediaQuery.of(context).size.height / height) * playerPosition.x),
+                          top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * playerPosition.y),
+                          left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * playerPosition.x),
                           child: SizedBox(
-                            width: MediaQuery.of(context).size.height / height,
-                            height: MediaQuery.of(context).size.height / height,
+                            width: sizeOneCell,
+                            height: sizeOneCell,
                             child: (snapshot.data![Player])[map.getPlayerFacingAsInt()],
                           ),
                         ),
