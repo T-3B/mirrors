@@ -25,7 +25,16 @@ enum AssetsPaths {
   const AssetsPaths(this.paths);
   final List paths;
 }
-enum Direction { up, down, left, right, none }
+enum Direction {
+  up, down, left, right, none;
+  Direction get opposite => switch (this) {
+    up => down,
+    down => up,
+    left => right,
+    right => left,
+    none => none,
+  };
+}
 enum RotationDirection{ clockwise, counterclockwise }
 
 class Position {
@@ -50,7 +59,7 @@ class Position {
 
 
 abstract class ElementLevel {
-  AssetsPaths _assetsPaths;
+  final AssetsPaths _assetsPaths;
   List<Image>? _images;
   Widget? _view;
 
@@ -75,32 +84,53 @@ abstract class ElementLevel {
 // }
 
 class Mirror extends ElementLevel with ChangeNotifier {
-  double _angle = 0;
-  Mirror(int clockwiseTimes) : super(AssetsPaths.mirror) {};
-  Mirror.fromDirections(Direction dir1, Direction dir2) : super(AssetsPaths.mirror) {
-    double dir2Angle(Direction dir) => switch(dir) {
-      Direction.up => pi / 2,
-      Direction.down => 3 * pi / 2,
-      Direction.left => pi,
+  late int clockwiseTimes;
+  Mirror(int clockwiseTimes) : super(AssetsPaths.mirror) { this.clockwiseTimes = clockwiseTimes % 4; }
+  Mirror.fromDirections(Direction dir1, Direction dir2) : super(AssetsPaths.mirror) {  // These 2 Directions are either the same (e.g. up up == mirror '—') or "neighbor" (e.g. right down == mirror '/')
+    int dir2clocks(Direction dir) => switch(dir) {
+      Direction.up => 2,
+      Direction.down => -2,
+      Direction.left => 4,
       _ => 0,
     };
 
-    _angle = dir2Angle(dir1) + dir2Angle(dir2) / 2;
+    clockwiseTimes = (dir2clocks(dir1) + dir2clocks(dir2) ~/ 2) % 4;
   }
+
+  double get angle => clockwiseTimes * pi / 4;
 
   void rotate(RotationDirection rot) {
     switch (rot) {
       case RotationDirection.clockwise:
-        _angle += pi / 4;
+        clockwiseTimes = min(clockwiseTimes + 1, 3);
       case RotationDirection.counterclockwise:
-        _angle -= pi / 4;
+        clockwiseTimes = max(clockwiseTimes - 1, 0);
     }
     notifyListeners();
   }
 
   // return the reflected Direction of the input Direction (using the Mirror angle); Direction.none reflected beam overlaps the input (e.g. inDir == right; thus reflected to outDir == left)
   Direction reflectedDir(Direction inDir) {
-    return Direction.up;
+    switch (clockwiseTimes) {
+      case 1:
+        return switch (inDir) {
+          Direction.up => Direction.left,
+          Direction.left => Direction.up,
+          Direction.right => Direction.down,
+          Direction.down => Direction.right,
+          Direction.none => Direction.none
+        };
+      case 3:
+        return switch (inDir) {
+          Direction.up => Direction.right,
+          Direction.right => Direction.up,
+          Direction.left => Direction.down,
+          Direction.down => Direction.left,
+          Direction.none => Direction.none
+        };
+      default:
+        return Direction.none;  // for case 0 and 2, mirror is either | or —
+    }
   }
 }
 

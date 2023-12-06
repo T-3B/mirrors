@@ -42,25 +42,25 @@ class PlayerView extends StatelessWidget {
               onPressed: () {
                 controller.movePlayer(Direction.up);
               },
-              child: Text('up'),
+              child: const Text('up'),
             ),
             ElevatedButton(
               onPressed: () {
                 controller.movePlayer(Direction.down);
               },
-              child: Text('down'),
+              child: const Text('down'),
             ),
             ElevatedButton(
               onPressed: () {
                 controller.movePlayer(Direction.right);
               },
-              child: Text('right'),
+              child: const Text('right'),
             ),
             ElevatedButton(
               onPressed: () {
                 controller.movePlayer(Direction.left);
               },
-              child: Text('left'),
+              child: const Text('left'),
             ),
           ],
         )

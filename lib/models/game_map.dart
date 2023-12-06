@@ -119,6 +119,17 @@ class GameMap extends ChangeNotifier {
     return false;
   }
 
+  void _placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
+    while (grid[pos] is! Mirror && grid[pos] is! LaserEnd) {
+      grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
+      pos = pos.translate(dir);
+    }
+    if (grid[pos] is Mirror) {
+      final nextDir = (grid[pos] as Mirror).reflectedDir(dir);
+      _placeLasersFrom(grid, pos.translate(nextDir), nextDir);
+    }
+  }
+
   Map<Position, ElementLevel> _generateRandomLevel() {
     final rand = Random();
     final height = rand.nextInt(9) + 6;
@@ -174,19 +185,9 @@ class GameMap extends ChangeNotifier {
     // rotate mirrors
     grid.values.whereType<Mirror>().forEach((e) { for (var i = rand.nextInt(3) + 1; i != 0; i--) { e.rotate(RotationDirection.clockwise); } });
 
-    void _placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
-      while (grid[pos] is! Mirror && grid[pos] is! LaserEnd) {
-        grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
-        pos = pos.translate(dir);
-      }
-      if (grid[pos] is Mirror) {
-        final Direction nextDir;
-        // _placeLasersFrom(grid, pos.translate(nextDir), nextDir);
-      }
-    }
     //re-add lasers
     final laserStarts = grid.entries.whereType<MapEntry<Position, LaserStart>>().toList();
-    laserStarts.forEach((e) { _placeLasersFrom(grid, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir); });
+    laserStarts.forEach((e) { _placeLasersFrom(grid, e.key.translate(e.value.dir), e.value.dir); });
     
     // get all remaining Grounds, shuffle Positions
     final remainingGrounds = grid.keys.where((e) => grid[e] is Ground).toList()..shuffle(rand);
@@ -226,7 +227,7 @@ class GameMap extends ChangeNotifier {
         'C' => Coin(),
         'E' => LaserEnd(),
         'G' => Ground(),
-        'M' => Mirror(Random().nextInt(4) * pi / 4),  // random orientation of the mirror
+        'M' => Mirror(Random().nextInt(4)),  // random orientation of the mirror
         'P' => Player(),
         'U' => LaserStart(Direction.up),
         'R' => LaserStart(Direction.right),
