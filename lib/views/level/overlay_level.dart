@@ -105,7 +105,10 @@ class SoundButton extends StatelessWidget {
       onPressed: () {
 
       },
-      child: const Icon(Icons.volume_up),
+      child: const Icon(
+        Icons.volume_up,
+        color: Colors.white,
+      ),
     );
   }
 
@@ -121,7 +124,10 @@ class HapticsButton extends StatelessWidget {
       onPressed: () {
 
       },
-      child: const Icon(Icons.vibration),
+      child: const Icon(
+        Icons.vibration,
+        color: Colors.white,
+      ),
     );
   }
 
@@ -144,7 +150,10 @@ class PlayPauseButton extends StatelessWidget {
           controller.isGameRunning = true;
         }
       },
-      child: Icon(controller.isGameRunning ? Icons.pause : Icons.play_arrow),
+      child: Icon(
+        controller.isGameRunning ? Icons.pause : Icons.play_arrow,
+        color: Colors.white,
+      ),
     );
   }
 
