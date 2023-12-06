@@ -31,10 +31,11 @@ class MainApp extends StatelessWidget {
           'about': (context) => const About(),
           'settings': (context) => const Settings(),
           'play': (context) => ChangeNotifierProvider(
-            create: (context) => HomeAssets(),
-            child: const LevelSelection(),
-          ),
-          'random': (context) => const Loading(), // change by random level class 
+                create: (context) => HomeAssets(),
+                child: const LevelSelection(),
+              ),
+          'random': (context) =>
+              const Loading(), // change by random level class
         },
         home: Scaffold(
           body: ChangeNotifierProvider(

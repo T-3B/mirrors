@@ -63,7 +63,8 @@ class HomeAssets extends ChangeNotifier {
     List<String> fileNames = [];
 
     try {
-      List<String> assetFiles = await rootBundle.loadString('AssetManifest.json')
+      List<String> assetFiles = await rootBundle
+          .loadString('AssetManifest.json')
           .then((String manifestContent) {
         Map<String, dynamic> manifestMap = json.decode(manifestContent);
         return manifestMap.keys
@@ -88,6 +89,6 @@ class HomeAssets extends ChangeNotifier {
 
   @override
   void dispose() {
-    //super.dispose();
+    super.dispose();
   }
 }
