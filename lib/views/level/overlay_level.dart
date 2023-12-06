@@ -79,6 +79,15 @@ class OverlayLevel extends StatelessWidget {
                 }
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.only(right: 20), 
+              child: GameButton(
+                icon: const AssetImage('assets/in_game/button_action.png'), 
+                callbackAction: () {
+                  /// call action to do
+                }
+              ),
+            ),
             GameButton(icon: const AssetImage('assets/in_game/button_action_rotate_right.png'), callbackAction: () {
               controller.rotateMirror(RotationDirection.counterclockwise);
             }),
