@@ -44,20 +44,27 @@ class LevelController {
 
     Position playerPosition = map.levelMap.entries.firstWhere((e) => e.value is Player).key;
 
-    switch(map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)]) {
-      case Mirror():
-        if (map.levelMap[Position(playerPosition.x + x + x, playerPosition.y + y + y)].runtimeType == Ground) {
+    switch(map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)].runtimeType) {
+      case Mirror:
+        List<Type> possibleTypes = [Ground, LaserBeamCross, LaserBeamHorizontal, LaserBeamVertical];
+        if(possibleTypes.contains(map.levelMap[Position(playerPosition.x + x + x, playerPosition.y + y + y)].runtimeType)) {
           map.levelMap[Position(playerPosition.x + x + x, playerPosition.y + y + y)] = map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)]!;
           map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
           map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
+          _rewriteLaser();
         }
         map.notifyAllListeners();
         break;
-      case Coin():
+      case Coin:
         // do something
-      case Ground():
+      case LaserBeamCross:
+      case LaserBeamHorizontal:
+      case LaserBeamVertical:
+        // kill player
+      case Ground:
         map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
         map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
+        _rewriteLaser();
         map.notifyAllListeners();
 
         //player.move(direction);
@@ -82,7 +89,19 @@ class LevelController {
 
     if(map.levelMap[cursorPosition] is Mirror) {
       (map.levelMap[cursorPosition] as Mirror).rotate(rotationDirection);
+      _rewriteLaser();
       map.notifyAllListeners();
+    }
+  }
+
+  void _rewriteLaser() {
+    // remove the lasers from the grid (put a Ground()), so we will rotate randomly mirrors and then re-add the lasers
+    map.levelMap.entries.where((e) => e.value is LaserBeamCross || e.value is LaserBeamHorizontal || e.value is LaserBeamVertical).forEach((e) { map.levelMap[e.key] = Ground(); });
+
+    //re-add lasers
+    final laserStarts = map.levelMap.entries.where((e) => e.value is LaserStart);
+    for (final e in laserStarts) {
+      map.placeLasersFrom(map.levelMap, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
     }
   }
 }

@@ -114,7 +114,7 @@ class GameMap extends ChangeNotifier {
     return false;
   }
 
-  void _placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
+  void placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
     while (grid[pos] is Ground || grid[pos] is LaserBeamHorizontal || grid[pos] is LaserBeamVertical) {
       grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
       pos = pos.translate(dir);
@@ -122,7 +122,7 @@ class GameMap extends ChangeNotifier {
     if (grid[pos] is Mirror) {
       final nextDir = (grid[pos] as Mirror).reflectedDir(dir);
        if (nextDir != Direction.none) {
-         _placeLasersFrom(grid, pos.translate(nextDir), nextDir);
+         placeLasersFrom(grid, pos.translate(nextDir), nextDir);
        }
     }
   }
@@ -188,7 +188,7 @@ class GameMap extends ChangeNotifier {
     //re-add lasers
     final laserStarts = grid.entries.where((e) => e.value is LaserStart);
     for (final e in laserStarts) {
-      _placeLasersFrom(grid, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
+      placeLasersFrom(grid, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
     }
     
     // get all remaining Grounds, shuffle Positions

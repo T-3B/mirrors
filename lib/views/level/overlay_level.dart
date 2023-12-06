@@ -10,7 +10,37 @@ class OverlayLevel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-            // right top buttons
+      const Positioned(
+        top: 0,
+        left: 20,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 70,
+              height: 70,
+              child: Image(
+                image: AssetImage('assets/in_game/coin_1.png'),
+              ),
+            ),
+            SizedBox(
+              width: 70,
+              height: 70,
+              child: Image(
+                image: AssetImage('assets/in_game/coin_grey.png'),
+              ),
+            ),
+            SizedBox(
+              width: 70,
+              height: 70,
+              child: Image(
+                image: AssetImage('assets/in_game/coin_grey.png'),
+              ),
+            ),
+          ],
+        )
+      ),
+      // right top buttons
       Positioned(
         top: 10,
         right: 20,
