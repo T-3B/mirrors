@@ -6,55 +6,85 @@ import '../views/animation/sprite_animation.dart';
 
 enum AssetsPaths {
   coin(['assets/in_game/coin_1.png', 'assets/in_game/coin_2.png']),
-  cursor(['assets/in_game/cursor_action_on_map_1.png', 'assets/in_game/cursor_action_on_map_2.png']),
+  cursor([
+    'assets/in_game/cursor_action_on_map_1.png',
+    'assets/in_game/cursor_action_on_map_2.png'
+  ]),
   ground(['assets/in_game/ground.png']),
-  laserBeamVertical(['assets/in_game/laser_vertical_red1.png', 'assets/in_game/laser_vertical_red2.png']),
+  laserBeamVertical([
+    'assets/in_game/laser_vertical_red1.png',
+    'assets/in_game/laser_vertical_red2.png'
+  ]),
   laserStart(['assets/in_game/laser_start_red.png']),
-  laserEnd(['assets/in_game/laser_end.png', 'assets/in_game/laser_end_red.png']),
-  mirrorEmpty(['assets/in_game/empty_mirror.png']),
-  mirrorFull(['assets/in_game/laser_mirror.png']),
+  laserEnd(
+      ['assets/in_game/laser_end.png', 'assets/in_game/laser_end_red.png']),
+  mirrorEmpty(['assets/in_game/mirror_empty.png']),
+  mirrorFull(['assets/in_game/mirror_laser.png']),
   wall(['assets/in_game/wall.png']),
-  playerUp(['assets/in_game/player_north_1.png', 'assets/in_game/player_north_2.png','assets/in_game/player_north_static.png']),
-  playerDown(['assets/in_game/player_south_1.png', 'assets/in_game/player_south_2.png','assets/in_game/player_south_static.png']),
-  playerRight(['assets/in_game/player_east_1.png', 'assets/in_game/player_east_2.png','assets/in_game/player_east_static.png']),
-  playerLeft(['assets/in_game/player_west_1.png', 'assets/in_game/player_west_2.png','assets/in_game/player_west_static.png']),
+  playerUp([
+    'assets/in_game/player_north_1.png',
+    'assets/in_game/player_north_2.png',
+    'assets/in_game/player_north_static.png'
+  ]),
+  playerDown([
+    'assets/in_game/player_south_1.png',
+    'assets/in_game/player_south_2.png',
+    'assets/in_game/player_south_static.png'
+  ]),
+  playerRight([
+    'assets/in_game/player_east_1.png',
+    'assets/in_game/player_east_2.png',
+    'assets/in_game/player_east_static.png'
+  ]),
+  playerLeft([
+    'assets/in_game/player_west_1.png',
+    'assets/in_game/player_west_2.png',
+    'assets/in_game/player_west_static.png'
+  ]),
   player(['assets/in_game/player_south_static.png']);
 
   const AssetsPaths(this.paths);
   final List paths;
 }
+
 enum Direction {
-  up, down, left, right, none;
+  up,
+  down,
+  left,
+  right,
+  none;
+
   Direction get opposite => switch (this) {
-    up => down,
-    down => up,
-    left => right,
-    right => left,
-    none => none,
-  };
+        up => down,
+        down => up,
+        left => right,
+        right => left,
+        none => none,
+      };
 }
-enum RotationDirection{ clockwise, counterclockwise }
+
+enum RotationDirection { clockwise, counterclockwise }
 
 class Position {
   int x, y;
   Position(this.x, this.y);
 
   @override
-  bool operator ==(Object other) => other is Position && x == other.x && y == other.y;
+  bool operator ==(Object other) =>
+      other is Position && x == other.x && y == other.y;
 
   @override
   int get hashCode => x.hashCode ^ y.hashCode;
 
   Position _translate(int dx, int dy) => Position(x + dx, y + dy);
   Position translate(Direction dir) => switch (dir) {
-    Direction.up => _translate(0, -1),
-    Direction.down => _translate(0, 1),
-    Direction.left => _translate(-1, 0),
-    Direction.right => _translate(1, 0),
-    Direction.none => this
-  };
+        Direction.up => _translate(0, -1),
+        Direction.down => _translate(0, 1),
+        Direction.left => _translate(-1, 0),
+        Direction.right => _translate(1, 0),
+        Direction.none => this
+      };
 }
-
 
 abstract class ElementLevel {
   final AssetsPaths _assetsPaths;
@@ -64,8 +94,12 @@ abstract class ElementLevel {
   ElementLevel(this._assetsPaths);
 
   Future<Widget> get view async {
-    _images ??= _assetsPaths.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
-    _view ??= _images!.length > 1 ? SpriteAnimation(_images!, const Duration(milliseconds: 150)) : _images![0];
+    _images ??= _assetsPaths.paths
+        .map((e) => Image(image: AssetImage(e), fit: BoxFit.contain))
+        .toList();
+    _view ??= _images!.length > 1
+        ? SpriteAnimation(_images!, const Duration(milliseconds: 150))
+        : _images![0];
     return _view!;
   }
 }
@@ -83,17 +117,11 @@ abstract class ElementLevel {
 
 class Mirror extends ElementLevel with ChangeNotifier {
   late int _clockwiseTimes;
-  Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) { _clockwiseTimes = clockwiseTimes % 4; }  // clockwiseTimes == 0 => vertical '|' Mirror
-  Mirror.fromDirections(Direction dir1, Direction dir2) : super(AssetsPaths.mirrorEmpty) {  // These 2 Directions are either the same (e.g. up up == mirror '—') or "neighbor" (e.g. right down == mirror '/')
-    int dir2clocks(Direction dir) => switch(dir) {
-      Direction.up => 2,
-      Direction.down => -2,
-      Direction.left => 4,
-      _ => 0,
-    };
+  bool isLaserTouching = false;
 
-    _clockwiseTimes = (dir2clocks(dir1) + dir2clocks(dir2) ~/ 2) % 4;
-  }
+  Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) {
+    _clockwiseTimes = clockwiseTimes % 4;
+  } // clockwiseTimes == 0 => vertical '|' Mirror
 
   double get angle => _clockwiseTimes * pi / 4;
 
@@ -107,7 +135,8 @@ class Mirror extends ElementLevel with ChangeNotifier {
     notifyListeners();
   }
 
-  // return the reflected Direction of the input Direction (using the Mirror angle); Direction.none reflected beam overlaps the input (e.g. inDir == right; thus reflected to outDir == left)
+  // return the reflected Direction of the input Direction (using the Mirror angle);
+  // Direction.none reflected beam overlaps the input (e.g. inDir == right; thus reflected to outDir == left)
   Direction reflectedDir(Direction inDir) {
     switch (_clockwiseTimes) {
       case 1:
@@ -127,20 +156,25 @@ class Mirror extends ElementLevel with ChangeNotifier {
           Direction.none => Direction.none
         };
       default:
-        return Direction.none;  // for case 0 and 2, mirror is either | or —
+        return Direction.none; // for case 0 and 2, mirror is either | or —
     }
   }
 
   static Future<Widget> getViewFacing(bool isOn) async {
-    AssetsPaths aPath = (isOn) ? AssetsPaths.mirrorFull : AssetsPaths.mirrorEmpty;
-    final image = aPath.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
-    return image.length > 1 ? SpriteAnimation(image, const Duration(milliseconds: 300)) : image[0];
+    AssetsPaths aPath =
+        (isOn) ? AssetsPaths.mirrorFull : AssetsPaths.mirrorEmpty;
+    final image = aPath.paths
+        .map((e) => Image(image: AssetImage(e), fit: BoxFit.contain))
+        .toList();
+    return image.length > 1
+        ? SpriteAnimation(image, const Duration(milliseconds: 300))
+        : image[0];
   }
-
 }
 
-class Player extends ElementLevel {// with ChangeNotifier {
-  Player._privateConstructor(): super(AssetsPaths.player);
+class Player extends ElementLevel {
+  // with ChangeNotifier {
+  Player._privateConstructor() : super(AssetsPaths.player);
 
   static Player? _instance;
 
@@ -150,20 +184,22 @@ class Player extends ElementLevel {// with ChangeNotifier {
   }
 
   @override
-  void dispose() {
-
-  }
+  void dispose() {}
 
   static Future<Widget> getViewFacing(Direction direction) async {
-    final aPath = switch(direction) {
+    final aPath = switch (direction) {
       Direction.up => AssetsPaths.playerUp,
       Direction.down => AssetsPaths.playerDown,
       Direction.left => AssetsPaths.playerLeft,
       Direction.right => AssetsPaths.playerRight,
       Direction.none => AssetsPaths.player
     };
-    final image = aPath.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
-    return image.length > 1 ? SpriteAnimation(image, const Duration(milliseconds: 300)) : image[0];
+    final image = aPath.paths
+        .map((e) => Image(image: AssetImage(e), fit: BoxFit.contain))
+        .toList();
+    return image.length > 1
+        ? SpriteAnimation(image, const Duration(milliseconds: 300))
+        : image[0];
   }
 
   @override
@@ -171,7 +207,7 @@ class Player extends ElementLevel {// with ChangeNotifier {
 }
 
 class Coin extends ElementLevel {
-  Coin._privateConstructor(): super(AssetsPaths.coin);
+  Coin._privateConstructor() : super(AssetsPaths.coin);
 
   static Coin? _instance;
 
@@ -182,7 +218,7 @@ class Coin extends ElementLevel {
 }
 
 class Ground extends ElementLevel {
-  Ground._privateConstructor(): super(AssetsPaths.ground);
+  Ground._privateConstructor() : super(AssetsPaths.ground);
 
   static Ground? _instance;
 
@@ -193,7 +229,7 @@ class Ground extends ElementLevel {
 }
 
 class Wall extends ElementLevel {
-  Wall._privateConstructor(): super(AssetsPaths.wall);
+  Wall._privateConstructor() : super(AssetsPaths.wall);
 
   static Wall? _instance;
 
@@ -210,7 +246,8 @@ class LaserStart extends ElementLevel {
 }
 
 class LaserBeamVertical extends ElementLevel {
-  LaserBeamVertical._privateConstructor(): super(AssetsPaths.laserBeamVertical);
+  LaserBeamVertical._privateConstructor()
+      : super(AssetsPaths.laserBeamVertical);
 
   static LaserBeamVertical? _instance;
 
@@ -221,7 +258,8 @@ class LaserBeamVertical extends ElementLevel {
 }
 
 class LaserBeamHorizontal extends ElementLevel {
-  LaserBeamHorizontal._privateConstructor(): super(AssetsPaths.laserBeamVertical);
+  LaserBeamHorizontal._privateConstructor()
+      : super(AssetsPaths.laserBeamVertical);
 
   static LaserBeamHorizontal? _instance;
 
@@ -231,11 +269,13 @@ class LaserBeamHorizontal extends ElementLevel {
   }
 
   @override
-  Future<Widget> get view async => Transform.rotate(angle: pi / 2, child: await LaserBeamVertical().view);
+  Future<Widget> get view async =>
+      Transform.rotate(angle: pi / 2, child: await LaserBeamVertical().view);
 }
 
-class LaserBeamCross extends ElementLevel {  // intersection of 2 beams (1 vertical + 1 horizontal)
-  LaserBeamCross._privateConstructor(): super(AssetsPaths.laserBeamVertical);
+class LaserBeamCross extends ElementLevel {
+  // intersection of 2 beams (1 vertical + 1 horizontal)
+  LaserBeamCross._privateConstructor() : super(AssetsPaths.laserBeamVertical);
 
   static LaserBeamCross? _instance;
 
@@ -245,11 +285,14 @@ class LaserBeamCross extends ElementLevel {  // intersection of 2 beams (1 verti
   }
 
   @override
-  Future<Widget> get view async => Stack(fit: StackFit.expand, children: [await LaserBeamVertical().view, await LaserBeamHorizontal().view]);
+  Future<Widget> get view async => Stack(fit: StackFit.expand, children: [
+        await LaserBeamVertical().view,
+        await LaserBeamHorizontal().view
+      ]);
 }
 
 class LaserEnd extends ElementLevel {
-  LaserEnd._privateConstructor(): super(AssetsPaths.laserEnd);
+  LaserEnd._privateConstructor() : super(AssetsPaths.laserEnd);
 
   static LaserEnd? _instance;
 
