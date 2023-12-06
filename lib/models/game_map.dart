@@ -115,7 +115,7 @@ class GameMap extends ChangeNotifier {
   }
 
   void _placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
-    while (grid[pos] is! Mirror && grid[pos] is! LaserEnd && grid[pos] is! Wall) {
+    while (grid[pos] is Ground || grid[pos] is LaserBeamHorizontal || grid[pos] is LaserBeamVertical) {
       grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
       pos = pos.translate(dir);
     }
@@ -159,6 +159,7 @@ class GameMap extends ChangeNotifier {
 
     // ----------------- LaserStart, Beam, End + Mirrors ------------------------------------------------------
     // while more than half of the map is ground, continue to add laser starts
+    exitLaserCreation:
     while (grid.values.whereType<Ground>().length * 4 > grid.length) {
       final laserDirs = [Direction.up, Direction.down, Direction.left, Direction.right];
       laserDirs.shuffle(rand);
@@ -169,7 +170,7 @@ class GameMap extends ChangeNotifier {
           grid[laserStartPos] = LaserStart(dir);  // place the laser start, we are sure it was a Ground before
           final isFeasible = _findBeamPath(grid, laserStartPos.translate(dir), dir, rand.nextInt(3) + 3);  // each laser beam path has between 3 and 3 corners between start and end
           if (isFeasible) {
-            break outerLoop;
+            break exitLaserCreation;
           } else {
             grid[laserStartPos] = Ground();
           }
@@ -177,7 +178,7 @@ class GameMap extends ChangeNotifier {
       }
       break;
     }
-/*
+
     // remove the lasers from the grid (put a Ground()), so we will rotate randomly mirrors and then re-add the lasers
     grid.entries.where((e) => e.value is LaserBeamCross || e.value is LaserBeamHorizontal || e.value is LaserBeamVertical).forEach((e) { grid[e.key] = Ground(); });
 
@@ -185,10 +186,10 @@ class GameMap extends ChangeNotifier {
     grid.values.whereType<Mirror>().forEach((e) { for (var i = rand.nextInt(3) + 1; i != 0; i--) { e.rotate(RotationDirection.clockwise); } });
 
     //re-add lasers
-    final laserStarts = grid.entries.whereType<MapEntry<Position, LaserStart>>().toList();
-    for (var e in laserStarts) {
-      _placeLasersFrom(grid, e.key.translate(e.value.dir), e.value.dir);
-    }*/
+    final laserStarts = grid.entries.where((e) => e.value is LaserStart);
+    for (final e in laserStarts) {
+      _placeLasersFrom(grid, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
+    }
     
     // get all remaining Grounds, shuffle Positions
     final remainingGrounds = grid.keys.where((e) => grid[e] is Ground).toList()..shuffle(rand);
