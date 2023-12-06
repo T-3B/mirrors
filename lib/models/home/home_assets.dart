@@ -89,6 +89,6 @@ class HomeAssets extends ChangeNotifier {
 
   @override
   void dispose() {
-    super.dispose();
+    //super.dispose();
   }
 }
