@@ -14,6 +14,8 @@ class GameMap extends ChangeNotifier {
   int width = 0, height = 0;
 
   Position _initialPlayerPosition = Position(1, 1);
+  Position _playerLastPosition = Position(-1, -1);
+  List<Position> _mirrorsNeighborsOfPlayer = [];
   
   int _levelID = 0;
   bool isReady = false;
@@ -37,12 +39,20 @@ class GameMap extends ChangeNotifier {
   }
   Position get initialPlayerPosition => _initialPlayerPosition;
   Position get playerPosition => levelMap.entries.firstWhere((e) => e.value is Player).key;
-  List<Position> get mirrorsNeighborsPositions {
-    final playerPos = playerPosition;
-    return levelMap.keys.where((e) => e.isNeighborOf(playerPos) && levelMap[e] is Mirror).toList();
+  List<Position> get mirrorsPositions => levelMap.keys.where((e) => levelMap[e] is Mirror).toList();
+  Position get cursorCurrentPosition => _mirrorsNeighborsOfPlayer.isEmpty ? playerPosition.translate(playerFacing) : _mirrorsNeighborsOfPlayer.first;
+  Position get cursorNextPosition {
+    final newPlayerPosition = playerPosition;
+    if (_playerLastPosition != newPlayerPosition) {
+      _mirrorsNeighborsOfPlayer = mirrorsPositions.where((e) => e.isNeighborOf(newPlayerPosition)).toList();
+      _playerLastPosition = newPlayerPosition;
+    } else if (_mirrorsNeighborsOfPlayer.isNotEmpty) {
+      _mirrorsNeighborsOfPlayer.add(_mirrorsNeighborsOfPlayer.removeAt(0));  // cycle the list (put the first element at the end)
+    }
+    return cursorCurrentPosition;
   }
 
-  void notifyAllListeners() {  // TODO useful code ?
+  void notifyAllListeners() {
     notifyListeners();
   }
 

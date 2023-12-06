@@ -6,61 +6,33 @@ import '../views/animation/sprite_animation.dart';
 
 enum AssetsPaths {
   coin(['assets/in_game/coin_1.png', 'assets/in_game/coin_2.png']),
-  cursor([
-    'assets/in_game/cursor_action_on_map_1.png',
-    'assets/in_game/cursor_action_on_map_2.png'
-  ]),
+  cursor(['assets/in_game/cursor_action_on_map_1.png', 'assets/in_game/cursor_action_on_map_2.png']),
   ground(['assets/in_game/ground.png']),
-  laserBeamVertical([
-    'assets/in_game/laser_vertical_red1.png',
-    'assets/in_game/laser_vertical_red2.png'
-  ]),
+  laserBeamVertical(['assets/in_game/laser_vertical_red1.png', 'assets/in_game/laser_vertical_red2.png']),
   laserStart(['assets/in_game/laser_start_red.png']),
-  laserEnd(
-      ['assets/in_game/laser_end.png', 'assets/in_game/laser_end_red.png']),
+  laserEnd(['assets/in_game/laser_end.png', 'assets/in_game/laser_end_red.png']),
   mirrorEmpty(['assets/in_game/mirror_empty.png']),
   mirrorFull(['assets/in_game/mirror_laser.png']),
   wall(['assets/in_game/wall.png']),
-  playerUp([
-    'assets/in_game/player_north_1.png',
-    'assets/in_game/player_north_2.png',
-    'assets/in_game/player_north_static.png'
-  ]),
-  playerDown([
-    'assets/in_game/player_south_1.png',
-    'assets/in_game/player_south_2.png',
-    'assets/in_game/player_south_static.png'
-  ]),
-  playerRight([
-    'assets/in_game/player_east_1.png',
-    'assets/in_game/player_east_2.png',
-    'assets/in_game/player_east_static.png'
-  ]),
-  playerLeft([
-    'assets/in_game/player_west_1.png',
-    'assets/in_game/player_west_2.png',
-    'assets/in_game/player_west_static.png'
-  ]),
+  playerUp(['assets/in_game/player_north_1.png', 'assets/in_game/player_north_2.png', 'assets/in_game/player_north_static.png']),
+  playerDown(['assets/in_game/player_south_1.png', 'assets/in_game/player_south_2.png', 'assets/in_game/player_south_static.png']),
+  playerRight(['assets/in_game/player_east_1.png', 'assets/in_game/player_east_2.png', 'assets/in_game/player_east_static.png']),
+  playerLeft(['assets/in_game/player_west_1.png', 'assets/in_game/player_west_2.png', 'assets/in_game/player_west_static.png']),
   player(['assets/in_game/player_south_static.png']);
 
   const AssetsPaths(this.paths);
   final List paths;
 }
 
-enum Direction {
-  up,
-  down,
-  left,
-  right,
-  none;
+enum Direction { up, down, left, right, none;
 
   Direction get opposite => switch (this) {
-        up => down,
-        down => up,
-        left => right,
-        right => left,
-        none => none,
-      };
+    up => down,
+    down => up,
+    left => right,
+    right => left,
+    none => none,
+  };
 }
 
 enum RotationDirection { clockwise, counterclockwise }

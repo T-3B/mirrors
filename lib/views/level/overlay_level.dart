@@ -84,7 +84,7 @@ class OverlayLevel extends StatelessWidget {
               child: GameButton(
                 icon: const AssetImage('assets/in_game/button_action.png'), 
                 callbackAction: () {
-                  /// call action to do
+                  controller.changeCursorPosition();
                 }
               ),
             ),

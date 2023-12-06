@@ -85,21 +85,18 @@ class LevelController {
   }
 
   void rotateMirror(RotationDirection rotationDirection) {
-    Position playerPosition = map.levelMap.entries.firstWhere((e) => e.value is Player).key;
-
-    Position cursorPosition = switch(map.playerFacing) {
-      Direction.up => Position(playerPosition.x, playerPosition.y - 1),
-      Direction.down => Position(playerPosition.x, playerPosition.y + 1),
-      Direction.left => Position(playerPosition.x - 1, playerPosition.y),
-      Direction.right => Position(playerPosition.x + 1, playerPosition.y),
-      Direction.none => Position(playerPosition.x, playerPosition.y),
-    };
+    Position cursorPosition = map.cursorCurrentPosition;
 
     if(map.levelMap[cursorPosition] is Mirror) {
       (map.levelMap[cursorPosition] as Mirror).rotate(rotationDirection);
       _rewriteLaser();
       map.notifyAllListeners();
     }
+  }
+
+  void changeCursorPosition() {
+    map.cursorNextPosition;
+    map.notifyAllListeners();
   }
 
   void _rewriteLaser() {

@@ -131,15 +131,8 @@ class LevelView extends StatelessWidget {
                 // Position endPosition = map.levelMap.entries.firstWhere((e) => e.value is LaserEnd).key;
 
                 final playerPosition = map.playerPosition;
-                final mirrorsNeighborsPositions = map.mirrorsNeighborsPositions;
 
-                Position cursorPosition = switch (map.playerFacing) {
-                  Direction.up => Position(playerPosition.x, playerPosition.y - 1),
-                  Direction.down => Position(playerPosition.x, playerPosition.y + 1),
-                  Direction.left => Position(playerPosition.x - 1, playerPosition.y),
-                  Direction.right => Position(playerPosition.x + 1, playerPosition.y),
-                  Direction.none => Position(playerPosition.x, playerPosition.y),
-                };
+                Position cursorPosition = map.cursorNextPosition;
 
                 LevelController controller = LevelController(map);
 
