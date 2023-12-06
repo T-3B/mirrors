@@ -140,6 +140,7 @@ class Mirror extends ElementLevel with ChangeNotifier {
   Direction reflectedDir(Direction inDir) {
     switch (_clockwiseTimes) {
       case 1:
+        isLaserTouching = true;
         return switch (inDir) {
           Direction.up => Direction.left,
           Direction.left => Direction.up,
@@ -148,6 +149,7 @@ class Mirror extends ElementLevel with ChangeNotifier {
           Direction.none => Direction.none
         };
       case 3:
+        isLaserTouching = true;
         return switch (inDir) {
           Direction.up => Direction.right,
           Direction.right => Direction.up,
@@ -156,6 +158,7 @@ class Mirror extends ElementLevel with ChangeNotifier {
           Direction.none => Direction.none
         };
       default:
+        isLaserTouching = false;
         return Direction.none; // for case 0 and 2, mirror is either | or —
     }
   }

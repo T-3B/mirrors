@@ -148,7 +148,6 @@ class GameMap extends ChangeNotifier {
       final nextDir = (grid[pos] as Mirror).reflectedDir(dir);
       if (nextDir != Direction.none) {
         placeLasersFrom(grid, pos.translate(nextDir), nextDir);
-        (grid[pos] as Mirror).isLaserTouching = true;
       }
     }
   }
