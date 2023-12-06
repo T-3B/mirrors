@@ -32,46 +32,54 @@ class LevelController {
     int tmp = _computeMove(direction);
     int x = (tmp < 0) ? - (tmp % 2) : tmp % 2 ;
     int y = tmp ~/ 2;
+    Direction nextDirection = Direction.none;
     if(x == -1) {
-      map.playerFacing = Direction.left;
+      nextDirection = Direction.left;
     } else if(x == 1) {
-      map.playerFacing = Direction.right;
+      nextDirection = Direction.right;
     } else if(y == -1) {
-      map.playerFacing = Direction.up;
+      nextDirection = Direction.up;
     } else if(y == 1) {
-      map.playerFacing = Direction.down;
+      nextDirection = Direction.down;
     }
 
-    Position playerPosition = map.levelMap.entries.firstWhere((e) => e.value is Player).key;
+    if(map.playerFacing != nextDirection) {
+      map.playerFacing = nextDirection;
+      map.notifyAllListeners();
+    } else {
+      map.playerFacing = nextDirection;
 
-    switch(map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)].runtimeType) {
-      case Mirror:
-        List<Type> possibleTypes = [Ground, LaserBeamCross, LaserBeamHorizontal, LaserBeamVertical];
-        if(possibleTypes.contains(map.levelMap[Position(playerPosition.x + x + x, playerPosition.y + y + y)].runtimeType)) {
-          map.levelMap[Position(playerPosition.x + x + x, playerPosition.y + y + y)] = map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)]!;
-          map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
+      Position playerPosition = map.levelMap.entries.firstWhere((e) => e.value is Player).key;
+
+      switch(map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)].runtimeType) {
+        case Mirror:
+          List<Type> possibleTypes = [Ground, LaserBeamCross, LaserBeamHorizontal, LaserBeamVertical];
+          if(possibleTypes.contains(map.levelMap[Position(playerPosition.x + x + x, playerPosition.y + y + y)].runtimeType)) {
+            map.levelMap[Position(playerPosition.x + x + x, playerPosition.y + y + y)] = map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)]!;
+            map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
+            map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
+            _rewriteLaser();
+          }
+          map.notifyAllListeners();
+          break;
+        case Coin:
+          // do something ?
+        case LaserBeamCross:
+        case LaserBeamHorizontal:
+        case LaserBeamVertical:
+          // kill player
+        case Ground:
           map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
+          map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
           _rewriteLaser();
-        }
-        map.notifyAllListeners();
-        break;
-      case Coin:
-        // do something
-      case LaserBeamCross:
-      case LaserBeamHorizontal:
-      case LaserBeamVertical:
-        // kill player
-      case Ground:
-        map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
-        map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
-        _rewriteLaser();
-        map.notifyAllListeners();
+          map.notifyAllListeners();
 
-        //player.move(direction);
-        return;
-      default:
-        print('default');
-        return;
+          //player.move(direction);
+          return;
+        default:
+          print('default');
+          return;
+      }
     }
     return;
   }

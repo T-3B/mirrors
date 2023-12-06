@@ -9,8 +9,9 @@ class OverlayLevel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int coinCount = controller.map.levelMap.entries.where((element) => element.value is Coin,).length;
     return Stack(children: [
-      const Positioned(
+      Positioned(
         top: 0,
         left: 20,
         child: Row(
@@ -20,21 +21,21 @@ class OverlayLevel extends StatelessWidget {
               width: 70,
               height: 70,
               child: Image(
-                image: AssetImage('assets/in_game/coin_1.png'),
+                image: (coinCount > 2) ? const AssetImage('assets/in_game/coin_grey.png') : const AssetImage('assets/in_game/coin_1.png'),
               ),
             ),
             SizedBox(
               width: 70,
               height: 70,
               child: Image(
-                image: AssetImage('assets/in_game/coin_grey.png'),
+                image: (coinCount > 1) ? const AssetImage('assets/in_game/coin_grey.png') : const AssetImage('assets/in_game/coin_1.png'),
               ),
             ),
             SizedBox(
               width: 70,
               height: 70,
               child: Image(
-                image: AssetImage('assets/in_game/coin_grey.png'),
+                image: (coinCount > 0) ? const AssetImage('assets/in_game/coin_grey.png') : const AssetImage('assets/in_game/coin_1.png'),
               ),
             ),
           ],
