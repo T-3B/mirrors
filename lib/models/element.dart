@@ -82,8 +82,8 @@ abstract class ElementLevel {
 // }
 
 class Mirror extends ElementLevel with ChangeNotifier {
-  late int clockwiseTimes;
-  Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) { this.clockwiseTimes = clockwiseTimes % 4; }
+  late int _clockwiseTimes;
+  Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) { _clockwiseTimes = clockwiseTimes % 4; }  // clockwiseTimes == 0 => vertical '|' Mirror
   Mirror.fromDirections(Direction dir1, Direction dir2) : super(AssetsPaths.mirrorEmpty) {  // These 2 Directions are either the same (e.g. up up == mirror '—') or "neighbor" (e.g. right down == mirror '/')
     int dir2clocks(Direction dir) => switch(dir) {
       Direction.up => 2,
@@ -92,24 +92,24 @@ class Mirror extends ElementLevel with ChangeNotifier {
       _ => 0,
     };
 
-    clockwiseTimes = (dir2clocks(dir1) + dir2clocks(dir2) ~/ 2) % 4;
+    _clockwiseTimes = (dir2clocks(dir1) + dir2clocks(dir2) ~/ 2) % 4;
   }
 
-  double get angle => clockwiseTimes * pi / 4;
+  double get angle => _clockwiseTimes * pi / 4;
 
   void rotate(RotationDirection rot) {
     switch (rot) {
       case RotationDirection.clockwise:
-        clockwiseTimes = min(clockwiseTimes + 1, 3);
+        _clockwiseTimes = min(_clockwiseTimes + 1, 3);
       case RotationDirection.counterclockwise:
-        clockwiseTimes = max(clockwiseTimes - 1, 0);
+        _clockwiseTimes = max(_clockwiseTimes - 1, 0);
     }
     notifyListeners();
   }
 
   // return the reflected Direction of the input Direction (using the Mirror angle); Direction.none reflected beam overlaps the input (e.g. inDir == right; thus reflected to outDir == left)
   Direction reflectedDir(Direction inDir) {
-    switch (clockwiseTimes) {
+    switch (_clockwiseTimes) {
       case 1:
         return switch (inDir) {
           Direction.up => Direction.left,
@@ -210,7 +210,7 @@ class LaserStart extends ElementLevel {
 }
 
 class LaserBeamVertical extends ElementLevel {
-  LaserBeamVertical._privateConstructor(): super(AssetsPaths.laserEnd);
+  LaserBeamVertical._privateConstructor(): super(AssetsPaths.laserBeamVertical);
 
   static LaserBeamVertical? _instance;
 
@@ -221,7 +221,7 @@ class LaserBeamVertical extends ElementLevel {
 }
 
 class LaserBeamHorizontal extends ElementLevel {
-  LaserBeamHorizontal._privateConstructor(): super(AssetsPaths.laserEnd);
+  LaserBeamHorizontal._privateConstructor(): super(AssetsPaths.laserBeamVertical);
 
   static LaserBeamHorizontal? _instance;
 
@@ -235,7 +235,7 @@ class LaserBeamHorizontal extends ElementLevel {
 }
 
 class LaserBeamCross extends ElementLevel {  // intersection of 2 beams (1 vertical + 1 horizontal)
-  LaserBeamCross._privateConstructor(): super(AssetsPaths.laserEnd);
+  LaserBeamCross._privateConstructor(): super(AssetsPaths.laserBeamVertical);
 
   static LaserBeamCross? _instance;
 

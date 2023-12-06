@@ -57,11 +57,6 @@ class GameMap extends ChangeNotifier {
       }
     }
   }
-
-  Iterable<Direction> _neighborGrounds(Map<Position, ElementLevel> grid, Position start, bool vertical) {
-    final allowedDirs = vertical ? {Direction.up, Direction.down} : {Direction.left, Direction.right};
-    return Direction.values.where((dir) => allowedDirs.contains(dir) && grid[start.translate(dir)] is Ground);
-  }
   // synchronous generator
   Iterable<Position> _getPositionsUntilWall(Map<Position, ElementLevel> grid, Position start, Direction dir) sync* {
     while (grid[start] is! Wall) {
@@ -70,45 +65,47 @@ class GameMap extends ChangeNotifier {
     }
   }
   // return the beam max length (before reaching a Wall) from Position `pos` with repeated translation of Direction `dir`
-  // if isLastBeam is true, then
-  List<Position> _getBeamEndPositions(Map<Position, ElementLevel> grid, Position start, Direction dir, bool isLastBeam) {
+  List<Position> _getBeamEndPositions(Map<Position, ElementLevel> grid, Position start, Direction dir) {
     var positions = _getPositionsUntilWall(grid, start, dir).toList();
-    positions = positions.takeWhile((val) => positions.lastWhere((e) => grid[e] is Ground) != val).toList();
-    // positions contains now all Positions from start to last ground before Wall
-
-    if (!isLastBeam) {
-      positions = positions.where((e) => _neighborGrounds(grid, start, dir == Direction.up || dir == Direction.down).isNotEmpty).toList();
+    while (positions.isNotEmpty && grid[positions.last] is! Ground) {
+      positions.removeLast();
+    }
+    if (positions.firstOrNull == start) {
+      positions.removeAt(0);  // to have at least a LaserBeam between LaserStart/Mirrors/LaserEnd
     }
     return positions;
   }
   // return true if a path was found, and grid is filled with LaserBeam(), Mirror(), LaserEnd()
   bool _findBeamPath(Map<Position, ElementLevel> grid, Position start, Direction dir, int numMaxBeamLines) {
-    var beamEndPositions = _getBeamEndPositions(grid, start, dir, numMaxBeamLines > 1);
-    final nextDir = switch (dir) {
-      Direction.up => [Direction.right, Direction.left][Random().nextInt(2)],
-      Direction.down => [Direction.right, Direction.left][Random().nextInt(2)],
-      Direction.left => [Direction.up, Direction.down][Random().nextInt(2)],
-      Direction.right => [Direction.up, Direction.down][Random().nextInt(2)],
-      Direction.none => Direction.up,
-    };
-    for (final beamEndPos in beamEndPositions..shuffle(Random())) {
+    var beamEndPositions = _getBeamEndPositions(grid, start, dir).reversed.toList();
+    for (final beamEndPos in beamEndPositions) {
       final gridBackup = {};
       for (Position pos = start; pos != beamEndPos; pos = pos.translate(dir)) {
         gridBackup[pos] = grid[pos];
         grid[pos] = dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal();
       }
 
-      final groundsPositions = grid.keys.where((e) => grid[e] is Ground).toList();
+      var groundsPositions = grid.keys.where((e) => grid[e] is Ground).toList();
       _visitGroundsFrom(groundsPositions, groundsPositions.first);
       if (groundsPositions.isEmpty) {  // then we have 0 unreachable zone
         if (numMaxBeamLines <= 1) {  // so this was the last beam line, we had to simply choose a random end and fill with LaserBeam()
           grid[beamEndPos] = LaserEnd();
-          return true;
+          groundsPositions = grid.keys.where((e) => grid[e] is Ground).toList();
+          _visitGroundsFrom(groundsPositions, groundsPositions.first);
+          if (groundsPositions.isEmpty) {
+            return true;
+          } else {
+            grid[beamEndPos] = Ground();
+          }
         }
-        final isFeasible = _findBeamPath(grid, start, nextDir, numMaxBeamLines - 1);
-        if (isFeasible) {
-          grid[beamEndPos] = Mirror.fromDirections(dir, nextDir);
-          return true;
+        for (var clockwiseTimes in [1, 3]..shuffle()) {  // try '/' or '\' Mirrors
+          grid[beamEndPos] = Mirror(clockwiseTimes);
+          final nextDir = (grid[beamEndPos] as Mirror).reflectedDir(dir);
+          final isFeasible = _findBeamPath(grid, beamEndPos.translate(nextDir), nextDir, numMaxBeamLines - 1);
+          if (isFeasible) {
+            return true;
+          }
+          grid[beamEndPos] = Ground();
         }
       }
       // we didn't find a feasible beam, or we had unreachable zone(s), so restore original grid and try with another beamEndPos
@@ -132,8 +129,8 @@ class GameMap extends ChangeNotifier {
 
   Map<Position, ElementLevel> _generateRandomLevel() {
     final rand = Random();
-    height = rand.nextInt(9) + 6;
-    width = rand.nextInt(19) + 6;
+    height = rand.nextInt(7) + 8;
+    width = rand.nextInt(14) + 11;
     final int numFreeBlocks = (width - 2) * (height - 2);  // number of available blocks in the grid (borders are wall)
     final int numAggregatedWalls = numFreeBlocks ~/ 8;  // = nbr of areas (*max*) to fill with X walls
     final int numAggregatedWallsSize = min(width, height) ~/ 3;  // = X walls (*max*) in each area
@@ -141,26 +138,26 @@ class GameMap extends ChangeNotifier {
     // ground everywhere and wall on borders
     final Map<Position, ElementLevel> grid = Map.fromIterable(Iterable.generate(height * width, (i) => Position(i % width, i ~/ width)), value: (e) => e.y == 0 || e.y == height - 1 || e.x == 0 || e.x == width - 1 ? Wall() : Ground());
 
-    // place Walls
-    final groundsPosition = grid.keys.where((e) => grid[e] is Ground).toList();
-
+    // ---------------- place Walls ----------------------------------------------------------------------
+    final groundsPositions = grid.keys.where((e) => grid[e] is Ground).toList()..shuffle(rand);
     for (int i = 0; i < numAggregatedWalls; i++) {
-      var pos = groundsPosition[rand.nextInt(groundsPosition.length)];
+      var pos = groundsPositions[0];
       for (int k = 0; k < numAggregatedWallsSize && grid[pos] is! Wall; k++) {
         // add the Wall, then check if level has unreachable areas (if yes remove that last Wall)
+        groundsPositions.remove(pos);
         grid[pos] = Wall();
-        final groundsNonVisited = List.of(groundsPosition);  // clone
+        final groundsNonVisited = List.of(groundsPositions);  // clone
         _visitGroundsFrom(groundsNonVisited, groundsNonVisited.first);
         if (groundsNonVisited.isEmpty) {  // if all areas are reachable
-          groundsPosition.remove(pos);
           pos = pos.translate(Direction.values[rand.nextInt(Direction.values.length)]);
         } else {
           grid[pos] = Ground();
+          groundsPositions.add(pos);
         }
       }
     }
-    /*
 
+    // ----------------- LaserStart, Beam, End + Mirrors ------------------------------------------------------
     // while more than half of the map is ground, continue to add laser starts
     while (grid.values.whereType<Ground>().length * 4 > grid.length) {
       final laserDirs = [Direction.up, Direction.down, Direction.left, Direction.right];
@@ -170,7 +167,7 @@ class GameMap extends ChangeNotifier {
         final laserStartPosList = grid.keys.where((pos) => grid[pos] is Ground && grid[pos.translate(dir)] is Ground).toList();  // place laser start where there is a ground next to it
         for (final laserStartPos in laserStartPosList..shuffle(rand)) {
           grid[laserStartPos] = LaserStart(dir);  // place the laser start, we are sure it was a Ground before
-          final isFeasible = _findBeamPath(grid, laserStartPos.translate(dir), dir, rand.nextInt(3) + 1);  // each laser beam path has between 1 and 3 corners between start and end
+          final isFeasible = _findBeamPath(grid, laserStartPos.translate(dir), dir, rand.nextInt(3) + 3);  // each laser beam path has between 3 and 3 corners between start and end
           if (isFeasible) {
             break outerLoop;
           } else {
@@ -178,8 +175,9 @@ class GameMap extends ChangeNotifier {
           }
         }
       }
+      break;
     }
-
+/*
     // remove the lasers from the grid (put a Ground()), so we will rotate randomly mirrors and then re-add the lasers
     grid.entries.where((e) => e.value is LaserBeamCross || e.value is LaserBeamHorizontal || e.value is LaserBeamVertical).forEach((e) { grid[e.key] = Ground(); });
 
