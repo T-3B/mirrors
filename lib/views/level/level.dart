@@ -55,15 +55,78 @@ class LevelView extends StatelessWidget {
                           height: sizeOneCell,
                           child: Transform.rotate(
                             angle: (m.value as Mirror).angle,
-                            child: (snapshot.data![Mirror])[0],
+                            child: (snapshot.data![Mirror])[1],
                           )
-                          // Container(
-                          //   color: Colors.green,
-                          // ),
                         ),
                       )
                     );
                   }
+
+                  List<Widget> coinView = [];
+
+                  for(var c in map.levelMap.entries.where((element) => element.value is Coin).toList()) {
+                    coinView.add(
+                      Positioned(
+                        top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * c.key.y),
+                        left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * c.key.x),
+                        child: SizedBox(
+                          width: sizeOneCell,
+                          height: sizeOneCell,
+                          child: snapshot.data![Coin],
+                        ),
+                      )
+                    );
+                  }
+
+                  List<Widget> laserBeamCrossView = [];
+
+                  for(var c in map.levelMap.entries.where((element) => element.value is LaserBeamCross).toList()) {
+                    coinView.add(
+                      Positioned(
+                        top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * c.key.y),
+                        left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * c.key.x),
+                        child: SizedBox(
+                          width: sizeOneCell,
+                          height: sizeOneCell,
+                          child: snapshot.data![LaserBeamCross],
+                        ),
+                      )
+                    );
+                  }
+
+                  List<Widget> laserBeamVerticalView = [];
+
+                  for(var c in map.levelMap.entries.where((element) => element.value is LaserBeamVertical).toList()) {
+                    coinView.add(
+                      Positioned(
+                        top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * c.key.y),
+                        left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * c.key.x),
+                        child: SizedBox(
+                          width: sizeOneCell,
+                          height: sizeOneCell,
+                          child: snapshot.data![LaserBeamVertical],
+                        ),
+                      )
+                    );
+                  }
+
+                  List<Widget> laserBeamHorizontalView = [];
+
+                  for(var c in map.levelMap.entries.where((element) => element.value is LaserBeamHorizontal).toList()) {
+                    coinView.add(
+                      Positioned(
+                        top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * c.key.y),
+                        left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * c.key.x),
+                        child: SizedBox(
+                          width: sizeOneCell,
+                          height: sizeOneCell,
+                          child: snapshot.data![LaserBeamHorizontal],
+                        ),
+                      )
+                    );
+                  }
+
+                  Position endPosition = map.levelMap.entries.firstWhere((e) => e.value is LaserEnd).key;
                   
                   Position playerPosition = map.levelMap.entries.firstWhere((e) => e.value is Player).key;
 
@@ -79,7 +142,7 @@ class LevelView extends StatelessWidget {
 
                   return Common(
                     Stack(
-                      children: [
+                      children: <Widget>[
                         Positioned(
                           top: 0,
                           left: 0,
@@ -101,7 +164,8 @@ class LevelView extends StatelessWidget {
                                     (BuildContext context, int index) {
                                   ElementLevel current = map.levelMap[Position(index % width, index ~/ width)]!;
                                   Type currentType = current.runtimeType;
-                                  if(currentType == Player || currentType == Mirror || currentType == Coin) {
+                                  List<Type> mustBeGround = [Player, Mirror, Coin, LaserEnd, LaserBeamCross, LaserBeamHorizontal, LaserBeamVertical];
+                                  if(mustBeGround.contains(currentType)) {
                                     currentType = Ground;
                                   }
                                   return snapshot.data![currentType];
@@ -134,8 +198,22 @@ class LevelView extends StatelessWidget {
                           )
                         ),
 
-                        OverlayLevel(controller: controller,),
-                      ] + mirrorsView,
+                        Positioned(
+                          top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * endPosition.y),
+                          left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * endPosition.x),
+                          child: SizedBox(
+                            width: sizeOneCell,
+                            height: sizeOneCell,
+                            child: snapshot.data![LaserEnd],
+                          ),
+                        ),
+                      ] 
+                      + mirrorsView 
+                      + coinView
+                      + laserBeamHorizontalView
+                      + laserBeamVerticalView 
+                      + laserBeamCrossView 
+                      + <Widget>[OverlayLevel(controller: controller,),],
                     ),
                   );
                 }

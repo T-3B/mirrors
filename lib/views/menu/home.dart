@@ -15,17 +15,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
-  late HomeAssets _homeAssets;
   late GlobalSettings _settings;
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -46,7 +45,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
     return Consumer2(
         builder: (context, HomeAssets homeAssets, GlobalSettings settings, _) {
-      _homeAssets = homeAssets;
       _settings = settings;
 
       if (!homeAssets.ready) {
