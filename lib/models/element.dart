@@ -17,10 +17,7 @@ enum AssetsPaths {
   playerDown(['assets/in_game/player_south_1.png', 'assets/in_game/player_south_2.png','assets/in_game/player_south_static.png']),
   playerRight(['assets/in_game/player_east_1.png', 'assets/in_game/player_east_2.png','assets/in_game/player_east_static.png']),
   playerLeft(['assets/in_game/player_west_1.png', 'assets/in_game/player_west_2.png','assets/in_game/player_west_static.png']),
-  player(['assets/in_game/player_east_1.png', 'assets/in_game/player_east_2.png','assets/in_game/player_east_static.png',
-  'assets/in_game/player_north_1.png', 'assets/in_game/player_north_2.png','assets/in_game/player_north_static.png',
-  'assets/in_game/player_south_1.png', 'assets/in_game/player_south_2.png','assets/in_game/player_south_static.png',
-  'assets/in_game/player_west_1.png', 'assets/in_game/player_west_2.png','assets/in_game/player_west_static.png',],);
+  player(['assets/in_game/player_south_static.png']);
 
   const AssetsPaths(this.paths);
   final List paths;
@@ -150,26 +147,19 @@ class Player extends ElementLevel {// with ChangeNotifier {
   }
 
   static Future<Widget> getViewFacing(Direction direction) async {
-    AssetsPaths aPath = AssetsPaths.player;
-    List<Image>? image;
-    Widget? view;
-    switch(direction) {
-      case Direction.up:
-        aPath = AssetsPaths.playerUp;
-      case Direction.down:
-        aPath = AssetsPaths.playerDown;
-      case Direction.left:
-        aPath = AssetsPaths.playerLeft;
-      case Direction.right:
-        aPath = AssetsPaths.playerRight;
-      case Direction.none:
-        // _assetsPaths = AssetsPaths.ground;
-    }
-    image ??= aPath.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
-    view ??= image!.length > 1 ? SpriteAnimation(image!, const Duration(milliseconds: 300)) : image![0];
-    return view!;
+    final aPath = switch(direction) {
+      Direction.up => AssetsPaths.playerUp,
+      Direction.down => AssetsPaths.playerDown,
+      Direction.left => AssetsPaths.playerLeft,
+      Direction.right => AssetsPaths.playerRight,
+      Direction.none => AssetsPaths.player
+    };
+    final image = aPath.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
+    return image.length > 1 ? SpriteAnimation(image, const Duration(milliseconds: 300)) : image[0];
   }
 
+  @override
+  Future<Widget> get view async => getViewFacing(Direction.none);
 }
 
 class Coin extends ElementLevel {

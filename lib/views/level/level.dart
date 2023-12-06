@@ -118,12 +118,7 @@ Future<Map<Type, dynamic>> _fetch() async => {
   Coin: await Coin().view,
   Ground: await Ground().view,
   Wall: await Wall().view,
-  Player: await Future.wait(
-    List.generate(
-      Direction.values.length, 
-      (index) async => await Player.getViewFacing(Direction.values[index]),
-    ),
-  ),
+  Player: await Direction.values.map((e) async => await Player.getViewFacing(e)).wait,
   Mirror: await Ground().view,  // TODO
   LaserStart: await LaserStart(Direction.up).view,
   LaserBeamVertical: await LaserBeamVertical().view,

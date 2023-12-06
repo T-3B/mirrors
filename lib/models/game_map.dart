@@ -10,8 +10,14 @@ class GameMap extends ChangeNotifier {
   static GameMap? _map;
 
   late Map<Position, ElementLevel> _levelMap;
-  
   Direction playerFacing = Direction.down;
+  int width = 0, height = 0;
+
+  Position initialPlayerPosition = Position(1, 1);
+  int _levelID = 0;
+  bool isReady = false;
+
+  List<Position> initialMirrorsPosition = [];
 
   Map<Position, ElementLevel> get levelMap => _levelMap;
 
@@ -33,14 +39,6 @@ class GameMap extends ChangeNotifier {
       Direction.none => 4,
     };
   }
-
-  int width = 0, height = 0;
-
-  Position initialPlayerPosition = Position(1, 1);
-  int _levelID = 0;
-  bool isReady = false;
-
-  List<Position> initialMirrorsPosition = [];
 
   factory GameMap(int id) {
     _map = GameMap._privateConstructor(id);
@@ -120,20 +118,22 @@ class GameMap extends ChangeNotifier {
   }
 
   void _placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
-    while (grid[pos] is! Mirror && grid[pos] is! LaserEnd) {
+    while (grid[pos] is! Mirror && grid[pos] is! LaserEnd && grid[pos] is! Wall) {
       grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
       pos = pos.translate(dir);
     }
     if (grid[pos] is Mirror) {
       final nextDir = (grid[pos] as Mirror).reflectedDir(dir);
-      _placeLasersFrom(grid, pos.translate(nextDir), nextDir);
+       if (nextDir != Direction.none) {
+         _placeLasersFrom(grid, pos.translate(nextDir), nextDir);
+       }
     }
   }
 
   Map<Position, ElementLevel> _generateRandomLevel() {
     final rand = Random();
-    final height = rand.nextInt(9) + 6;
-    final width = rand.nextInt(19) + 6;
+    height = rand.nextInt(9) + 6;
+    width = rand.nextInt(19) + 6;
     final int numFreeBlocks = (width - 2) * (height - 2);  // number of available blocks in the grid (borders are wall)
     final int numAggregatedWalls = numFreeBlocks ~/ 8;  // = nbr of areas (*max*) to fill with X walls
     final int numAggregatedWallsSize = min(width, height) ~/ 3;  // = X walls (*max*) in each area
@@ -159,6 +159,7 @@ class GameMap extends ChangeNotifier {
         }
       }
     }
+    /*
 
     // while more than half of the map is ground, continue to add laser starts
     while (grid.values.whereType<Ground>().length * 4 > grid.length) {
@@ -187,7 +188,9 @@ class GameMap extends ChangeNotifier {
 
     //re-add lasers
     final laserStarts = grid.entries.whereType<MapEntry<Position, LaserStart>>().toList();
-    laserStarts.forEach((e) { _placeLasersFrom(grid, e.key.translate(e.value.dir), e.value.dir); });
+    for (var e in laserStarts) {
+      _placeLasersFrom(grid, e.key.translate(e.value.dir), e.value.dir);
+    }*/
     
     // get all remaining Grounds, shuffle Positions
     final remainingGrounds = grid.keys.where((e) => grid[e] is Ground).toList()..shuffle(rand);
