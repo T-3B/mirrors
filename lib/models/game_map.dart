@@ -13,6 +13,17 @@ class GameMap extends ChangeNotifier {
   Direction playerFacing = Direction.down;
   int width = 0, height = 0;
 
+  bool _isLose = false;
+
+  set isLose(bool value) {
+    _isLose = value;
+    notifyListeners();
+  }
+
+  bool get isLose {
+    return _isLose;
+  }
+
   Position _initialPlayerPosition = Position(1, 1);
   Position _playerLastPosition = Position(-1, -1);
   List<Position> _mirrorsNeighborsOfPlayer = [];
@@ -221,6 +232,14 @@ class GameMap extends ChangeNotifier {
       _levelMap = _generateRandomLevel();
     } else if(_levelID != levelID) {
       _levelMap = _parseLevelRows(const LineSplitter().convert(await rootBundle.loadString('assets/levels/$levelID.txt')));
+      levelMap.entries.where((e) => e.value is LaserBeamCross || e.value is LaserBeamHorizontal || e.value is LaserBeamVertical).forEach((e) { levelMap[e.key] = Ground(); });
+
+      //re-add lasers
+      final laserStarts = levelMap.entries.where((e) => e.value is LaserStart);
+      for (final e in laserStarts) {
+        placeLasersFrom(levelMap, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
+      }
+      
     } else {
       _levelMap = _generateRandomLevel();
     }

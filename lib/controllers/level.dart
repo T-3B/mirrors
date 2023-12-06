@@ -68,6 +68,12 @@ class LevelController {
         case LaserBeamHorizontal:
         case LaserBeamVertical:
           // kill player
+          print('1');
+          map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
+          map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
+          map.isLose = true;
+          map.notifyAllListeners();
+          return;
         case Ground:
           map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
           map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
