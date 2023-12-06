@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mirrors/controllers/level.dart';
 import 'package:mirrors/models/element.dart';
+import 'package:provider/provider.dart';
+
+import '../../models/global_settings.dart';
 
 class OverlayLevel extends StatelessWidget {
   final LevelController controller;
@@ -140,16 +143,18 @@ class SoundButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: Colors.black,
-      onPressed: () {
-
-      },
-      child: const Icon(
-        Icons.volume_up,
-        color: Colors.white,
-      ),
-    );
+    return Consumer(builder: (context, GlobalSettings gs, _) {
+      return FloatingActionButton(
+        backgroundColor: Colors.black,
+        onPressed: () {
+          gs.volume = !gs.volume;
+        },
+        child: Icon(
+          (gs.volume ? Icons.volume_up : Icons.volume_off),
+          color: Colors.white,
+        ),
+      );
+    });
   }
 
 }
@@ -159,16 +164,18 @@ class HapticsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: Colors.black,
-      onPressed: () {
-
-      },
-      child: const Icon(
-        Icons.vibration,
-        color: Colors.white,
-      ),
-    );
+    return Consumer(builder: (context, GlobalSettings gs, _) {
+      return FloatingActionButton(
+        backgroundColor: Colors.black,
+        onPressed: () {
+          gs.vibration = !gs.vibration;
+        },
+        child: Icon(
+          (gs.vibration ? Icons.vibration : Icons.mobile_off),
+          color: Colors.white,
+        ),
+      );
+    });
   }
 
 }
