@@ -12,7 +12,7 @@ enum AssetsPaths {
   laserStart(['assets/in_game/laser_start_red.png']),
   laserEnd(['assets/in_game/laser_end.png', 'assets/in_game/laser_end_red.png']),
   mirrorEmpty(['assets/in_game/mirror_empty.png']),
-  mirrorFull(['assets/in_game/mirror_laser.png']),
+  mirrorLaser(['assets/in_game/mirror_laser1.png', 'assets/in_game/mirror_laser2.png']),
   wall(['assets/in_game/wall.png']),
   playerUp(['assets/in_game/player_north_1.png', 'assets/in_game/player_north_2.png', 'assets/in_game/player_north_static.png']),
   playerDown(['assets/in_game/player_south_1.png', 'assets/in_game/player_south_2.png', 'assets/in_game/player_south_static.png']),
@@ -79,8 +79,8 @@ class Mirror extends ElementLevel with ChangeNotifier {
   late int _clockwiseTimes;
   bool isLaserTouching = false;
 
-  Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) {  // clockwiseTimes == 0 => vertical '|' Mirror
-    _clockwiseTimes = clockwiseTimes % 4;
+  Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) {  // clockwiseTimes == 0 => vertical '-' Mirror
+    _clockwiseTimes = clockwiseTimes % 8;
   }
 
   double get angle => _clockwiseTimes * pi / 4;
@@ -90,15 +90,33 @@ class Mirror extends ElementLevel with ChangeNotifier {
     _clockwiseTimes = switch (rot) {
       RotationDirection.clockwise => _clockwiseTimes + 1,
       RotationDirection.counterclockwise => _clockwiseTimes - 1,
-    } % 4;
+    } % 8;
     notifyListeners();
   }
 
   // return the reflected Direction of the input Direction (using the Mirror angle);
   // Direction.none reflected beam overlaps the input (e.g. inDir == right; thus reflected to outDir == left)
   Direction reflectedDir(Direction inDir) {
-    switch (_clockwiseTimes) {
-      case 1:
+    switch (_clockwiseTimes) {  // add 4 to clockwise (pi rad) if the reflection is on the "wrong side" of the asset mirrorLaser
+      case 1:  // mirror '-\'    the dash - is where a laser is on the mirrorLaser asset
+        if (inDir == Direction.down || inDir == Direction.left) {
+          _clockwiseTimes = 5;
+        }
+      case 3:  // mirror '-/'
+        if (inDir == Direction.up || inDir == Direction.left) {
+          _clockwiseTimes = 7;
+        }
+      case 5:  // mirror '\-'
+        if (inDir == Direction.up || inDir == Direction.right) {
+          _clockwiseTimes = 1;
+        }
+      case 7:  // mirror '/-'
+        if (inDir == Direction.right || inDir == Direction.down) {
+          _clockwiseTimes = 3;
+        }
+    }
+    switch (_clockwiseTimes % 4) {
+      case 1:  // mirror '\'
         isLaserTouching = true;
         return switch (inDir) {
           Direction.up => Direction.left,
@@ -107,7 +125,7 @@ class Mirror extends ElementLevel with ChangeNotifier {
           Direction.down => Direction.right,
           Direction.none => Direction.none
         };
-      case 3:
+      case 3:  // mirror '/'
         isLaserTouching = true;
         return switch (inDir) {
           Direction.up => Direction.right,
@@ -123,7 +141,7 @@ class Mirror extends ElementLevel with ChangeNotifier {
   }
 
   static Future<Widget> getViewFacing(bool isOn) async {
-    AssetsPaths aPath = (isOn) ? AssetsPaths.mirrorFull : AssetsPaths.mirrorEmpty;
+    AssetsPaths aPath = (isOn) ? AssetsPaths.mirrorLaser : AssetsPaths.mirrorEmpty;
     final image = aPath.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
     return image.length > 1 ? SpriteAnimation(image, const Duration(milliseconds: 300)) : image[0];
   }
