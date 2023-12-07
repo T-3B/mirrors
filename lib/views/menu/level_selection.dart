@@ -4,9 +4,10 @@ import 'package:mirrors/models/home/home_assets.dart';
 import 'package:mirrors/views/level/level.dart';
 import 'package:mirrors/views/menu/loading.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LevelSelection extends StatelessWidget {
-  const LevelSelection({Key? key});
+  const LevelSelection({super.key,});
 
   @override
   Widget build(BuildContext context) {
@@ -62,12 +63,12 @@ class LevelSelection extends StatelessWidget {
                     },
                     child: Card(
                       color: Colors.transparent,
+                      shadowColor: Colors.transparent,
                       borderOnForeground: false,
                       child: Container(
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage(
-                                'assets/in_game/level_selector_bg.png'),
+                            image: AssetImage('assets/in_game/level_selector_bg.png'),
                             fit: BoxFit.cover,
                           ),
                           borderRadius: BorderRadius.all(
@@ -78,26 +79,28 @@ class LevelSelection extends StatelessWidget {
                           padding: const EdgeInsets.all(2.0),
                           child: Stack(
                             children: [
-                              Center(
-                                child: Text('Level ${levelNames[index]}'),
-                              ),
+                              Center(child: Text('Level ${levelNames[index]}'),),
+                              (levelNames[index] == 'random') ? Container() :
                               Align(
-                                alignment: Alignment.bottomRight,
+                                alignment: Alignment.bottomCenter,
                                 child: SizedBox(
-                                  height: 40,
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
-                                    children: List.generate(
-                                        3,
-                                        (coinIndex) => Image(
-                                              image: (coinIndex < 2)
-                                                  ? const AssetImage(
-                                                      'assets/in_game/coin_1.png')
-                                                  : const AssetImage(
-                                                      'assets/in_game/coin_grey.png'),
-                                              width: 40,
-                                              height: 40,
-                                            )),
+                                    
+                                    children: List.generate(3, (coinIndex) => FutureBuilder(
+                                      future: _loadCoinSave(int.parse(levelNames[index])),
+                                      builder: (context, snapshot) {
+                                        if(snapshot.connectionState != ConnectionState.waiting) {
+                                          return Image(
+                                            image: (coinIndex < (snapshot.data ?? 0)) ? const AssetImage('assets/in_game/coin_1.png') : const AssetImage('assets/in_game/coin_grey.png'),
+                                            width: 35,
+                                            height: 35,
+                                          );
+                                        }
+                                        return Container();
+                                      }
+                                    ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -115,4 +118,14 @@ class LevelSelection extends StatelessWidget {
       },
     );
   }
+
+
+  Future<int> _loadCoinSave(int id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int numberOfCoin = 0;
+    numberOfCoin = prefs.getInt('levelCoin$id') ?? 0;
+    return numberOfCoin;
+  }
 }
+
+
