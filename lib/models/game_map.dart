@@ -64,6 +64,7 @@ class GameMap extends ChangeNotifier {
   List<Position> get mirrorsPositions => levelMap.keys.where((e) => levelMap[e] is Mirror).toList();
   Position get cursorCurrentPosition => _mirrorsNeighborsOfPlayer.isEmpty ? playerPosition.translate(playerFacing) : _mirrorsNeighborsOfPlayer.first;
   Position get cursorNextPosition {
+    print('test cursor');
     final newPlayerPosition = playerPosition;
     if (_playerLastPosition != newPlayerPosition) {
       _mirrorsNeighborsOfPlayer = mirrorsPositions.where((e) => e.isNeighborOf(newPlayerPosition)).toList();

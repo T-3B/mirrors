@@ -164,7 +164,7 @@ class LevelView extends StatelessWidget {
 
                 final playerPosition = map.playerPosition;
 
-                Position cursorPosition = map.cursorNextPosition;
+                Position cursorPosition = map.cursorCurrentPosition;
 
                 LevelController controller = LevelController(map);
 

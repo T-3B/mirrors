@@ -59,12 +59,14 @@ class LevelController {
             map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
             _rewriteLaser();
           }
+          map.cursorNextPosition;
           map.notifyAllListeners();
           break;
         case Coin:
           map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
           map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
           map.notifyAllListeners();
+          map.cursorNextPosition; 
           return;
         case LaserBeamCross:
         case LaserBeamHorizontal:
@@ -72,16 +74,17 @@ class LevelController {
           map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
           map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
           map.isLose = true;
+          map.cursorNextPosition;
           map.notifyAllListeners();
           return;
         case Ground:
           map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
           map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
           _rewriteLaser();
+          map.cursorNextPosition;
           map.notifyAllListeners();
           return;
         default:
-          print('default');
           return;
       }
     }
