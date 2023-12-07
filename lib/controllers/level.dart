@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:mirrors/models/game_map.dart';
 import '../models/element.dart';
 
@@ -17,7 +19,6 @@ class LevelController {
 
   LevelController(this.map) {
     _isGameRunning = true;
-    //player = Player(Position(0,0));
   }
 
   int _computeMove(Direction direction) => switch(direction) {
@@ -27,9 +28,9 @@ class LevelController {
     Direction.down => 2,
     Direction.none => 0,
   };
-
-  void movePlayer(Direction direction) {
-    int tmp = _computeMove(direction);
+  
+  void movePlayer(Direction dir) {
+    int tmp = _computeMove(dir);
     int x = (tmp < 0) ? - (tmp % 2) : tmp % 2 ;
     int y = tmp ~/ 2;
     Direction nextDirection = Direction.none;
@@ -86,7 +87,6 @@ class LevelController {
           return;
       }
     }
-    return;
   }
 
   void rotateMirror(RotationDirection rotationDirection) {

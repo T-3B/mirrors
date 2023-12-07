@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mirrors/controllers/level.dart';
 import 'package:mirrors/models/element.dart';
@@ -75,23 +77,17 @@ class OverlayLevel extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 20), 
-              child: GameButton(
-                icon: const AssetImage('assets/in_game/button_action_rotate_left.png'), 
-                callbackAction: () {
-                  controller.rotateMirror(RotationDirection.clockwise);
-                }
-              ),
+              child: GameButton(icon: const AssetImage('assets/in_game/button_action_rotate_left.png'), tapDownFunction: (_) {
+                controller.rotateMirror(RotationDirection.clockwise);
+              }),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 20), 
-              child: GameButton(
-                icon: const AssetImage('assets/in_game/button_action.png'), 
-                callbackAction: () {
-                  controller.changeCursorPosition();
-                }
-              ),
+              child: GameButton( icon: const AssetImage('assets/in_game/button_action.png'), tapDownFunction: (_) {
+                controller.changeCursorPosition();
+              })
             ),
-            GameButton(icon: const AssetImage('assets/in_game/button_action_rotate_right.png'), callbackAction: () {
+            GameButton(icon: const AssetImage('assets/in_game/button_action_rotate_right.png'), tapDownFunction: (_) {
               controller.rotateMirror(RotationDirection.counterclockwise);
             }),
           ],
@@ -106,9 +102,9 @@ class OverlayLevel extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 5),
-              child: GameButton(icon: const AssetImage('assets/in_game/dpad_button_west.png'), callbackAction: () {
+              child: GameButton(icon: const AssetImage('assets/in_game/dpad_button_west.png'), tapDownFunction: (_) {
                 controller.movePlayer(Direction.left);
-              },),
+              }),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -116,20 +112,20 @@ class OverlayLevel extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 40),
-                  child: GameButton(icon: const AssetImage('assets/in_game/dpad_button_north.png'), callbackAction: () {
+                  child: GameButton(icon: const AssetImage('assets/in_game/dpad_button_north.png'), tapDownFunction: (_) {
                     controller.movePlayer(Direction.up);
-                  },),
+                  }),
                 ),
-                GameButton(icon: const AssetImage('assets/in_game/dpad_button_south.png'), callbackAction: () {
-                    controller.movePlayer(Direction.down);
-                  },),
+                GameButton(icon: const AssetImage('assets/in_game/dpad_button_south.png'), tapDownFunction: (_) {
+                  controller.movePlayer(Direction.down);
+                }),
               ],
             ),
             Padding(
               padding: const EdgeInsets.only(left: 5),
-              child: GameButton(icon: const AssetImage('assets/in_game/dpad_button_east.png'), callbackAction: () {
+              child: GameButton(icon: const AssetImage('assets/in_game/dpad_button_east.png'), tapDownFunction: (_) {
                 controller.movePlayer(Direction.right);
-              },),
+              }),
             ),
           ],
         ),
@@ -234,24 +230,47 @@ class PlayPauseButton extends StatelessWidget {
 
 }
 
-class GameButton extends StatelessWidget {
-  final AssetImage icon;
-  final void Function() callbackAction;
+class GameButton extends StatefulWidget {
+  final ImageProvider<Object> icon;
+  final void Function(TapDownDetails) tapDownFunction;
 
-  const GameButton({super.key, required this.icon, required this.callbackAction});
-  
+  const GameButton({super.key, required this.icon, required this.tapDownFunction});
+
+  @override
+  State createState() => _GameButtonState();
+}
+
+class _GameButtonState extends State<GameButton> {
+  late Timer _timer;
+  bool _isButtonPressed = false;
+
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: Colors.transparent,
-      onPressed: callbackAction,
+    return GestureDetector(
+      onTapDown: (_) {
+        _isButtonPressed = true;
+        widget.tapDownFunction(_);
+        _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+          if (_isButtonPressed) {
+            widget.tapDownFunction(_);
+          } else {
+            timer.cancel();
+          }
+        });
+      },
+      onTapCancel: () {
+        _timer.cancel();
+        _isButtonPressed = false;
+      },
+      onTapUp: (_) {
+        _timer.cancel();
+        _isButtonPressed = false;
+      },
       child: Image(
-        image: icon,
+        image: widget.icon,
         width: 50,
         height: 50,
       ),
     );
   }
-
-
 }
