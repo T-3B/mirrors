@@ -62,7 +62,7 @@ class LevelView extends StatelessWidget {
                   body: Loading(),
                 );
               } else if (snapshot.hasError) {
-                return const Text('error'); // TODO: throw error
+                return const Text('error');
               } else {
 
                 int width = map.width;
@@ -107,7 +107,7 @@ class LevelView extends StatelessWidget {
                 List<Widget> laserBeamCrossView = [];
 
                 for (var c in map.levelMap.entries.where((element) => element.value is LaserBeamCross)) {
-                  coinView.add(Positioned(  // TODO c is not a coin (which we add in coinView)
+                  laserBeamCrossView.add(Positioned(
                     top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * c.key.y),
                     left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * c.key.x),
                     child: SizedBox(
@@ -121,7 +121,7 @@ class LevelView extends StatelessWidget {
                 List<Widget> laserBeamVerticalView = [];
 
                 for (var c in map.levelMap.entries.where((element) => element.value is LaserBeamVertical)) {
-                  coinView.add(Positioned(
+                  laserBeamVerticalView.add(Positioned(
                     top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * c.key.y),
                     left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * c.key.x),
                     child: SizedBox(
@@ -135,7 +135,7 @@ class LevelView extends StatelessWidget {
                 List<Widget> laserBeamHorizontalView = [];
 
                 for (var c in map.levelMap.entries.where((element) => element.value is LaserBeamHorizontal)) {
-                  coinView.add(Positioned(
+                  laserBeamHorizontalView.add(Positioned(
                     top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * c.key.y),
                     left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * c.key.x),
                     child: SizedBox(
@@ -149,7 +149,7 @@ class LevelView extends StatelessWidget {
                 List<Widget> laserEndView = [];
 
                 for (var c in map.levelMap.entries.where((element) => element.value is LaserEnd)) {
-                  coinView.add(Positioned(
+                  laserEndView.add(Positioned(
                     top: ((MediaQuery.of(context).size.height - (sizeOneCell * height)) / 2) + (sizeOneCell * c.key.y),
                     left: ((MediaQuery.of(context).size.width - (sizeOneCell * width)) / 2) + (sizeOneCell * c.key.x),
                     child: SizedBox(
@@ -211,7 +211,7 @@ class LevelView extends StatelessWidget {
                           child: SizedBox(
                             width: sizeOneCell,
                             height: sizeOneCell,
-                            child: const SpriteAnimation([  // TODO async load by extending Element
+                            child: const SpriteAnimation([
                               Image(image: AssetImage('assets/in_game/cursor_action_on_map_2.png')),
                               Image(image: AssetImage('assets/in_game/cursor_action_on_map_1.png')),
                             ], Duration(milliseconds: 300)),

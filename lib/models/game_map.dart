@@ -64,7 +64,6 @@ class GameMap extends ChangeNotifier {
   List<Position> get mirrorsPositions => levelMap.keys.where((e) => levelMap[e] is Mirror).toList();
   Position get cursorCurrentPosition => _mirrorsNeighborsOfPlayer.isEmpty ? playerPosition.translate(playerFacing) : _mirrorsNeighborsOfPlayer.first;
   Position get cursorNextPosition {
-    print('test cursor');
     final newPlayerPosition = playerPosition;
     if (_playerLastPosition != newPlayerPosition) {
       _mirrorsNeighborsOfPlayer = mirrorsPositions.where((e) => e.isNeighborOf(newPlayerPosition)).toList();
@@ -156,6 +155,11 @@ class GameMap extends ChangeNotifier {
     while (grid[pos] is Ground || grid[pos] is LaserBeamHorizontal || grid[pos] is LaserBeamVertical || grid[pos] is Coin) {
       grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
       pos = pos.translate(dir);
+      if(grid[pos] is Player) {
+        isLose = true;
+        notifyListeners();
+        return;
+      }
     }
     if(grid[pos] is LaserEnd) {
       _isWin = true;

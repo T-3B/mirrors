@@ -5,7 +5,6 @@ import 'package:mirrors/models/home/home_assets.dart';
 import 'package:mirrors/views/menu/about.dart';
 import 'package:mirrors/views/menu/home.dart';
 import 'package:mirrors/views/menu/level_selection.dart';
-import 'package:mirrors/views/menu/loading.dart';
 import 'package:mirrors/views/menu/settings.dart';
 import 'package:provider/provider.dart';
 
@@ -37,8 +36,6 @@ class MainApp extends StatelessWidget {
                 create: (context) => HomeAssets(),
                 child: const LevelSelection(),
               ),
-          'random': (context) =>
-              const Loading(), // change by random level class
         },
         home: Scaffold(
           body: ChangeNotifierProvider(
