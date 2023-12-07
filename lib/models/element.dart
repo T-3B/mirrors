@@ -88,9 +88,9 @@ class Mirror extends ElementLevel with ChangeNotifier {
   void rotate(RotationDirection rot) {
     isLaserTouching = false;
     _clockwiseTimes = switch (rot) {
-      RotationDirection.clockwise => min(_clockwiseTimes + 1, 3),
-      RotationDirection.counterclockwise => max(_clockwiseTimes - 1, 0),
-    };
+      RotationDirection.clockwise => _clockwiseTimes + 1,
+      RotationDirection.counterclockwise => _clockwiseTimes - 1,
+    } % 4;
     notifyListeners();
   }
 

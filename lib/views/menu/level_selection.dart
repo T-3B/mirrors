@@ -42,9 +42,7 @@ class LevelSelection extends StatelessWidget {
                       padding: const EdgeInsets.all(0),
                     ),
                     onPressed: () {
-                      final levelID = (levelNames[index] == 'random')
-                          ? -1
-                          : int.parse(levelNames[index]);
+                      final levelID = (levelNames[index] == 'random') ? -1 : int.parse(levelNames[index]);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -71,9 +69,7 @@ class LevelSelection extends StatelessWidget {
                             image: AssetImage('assets/in_game/level_selector_bg.png'),
                             fit: BoxFit.cover,
                           ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(2.0),
@@ -86,21 +82,17 @@ class LevelSelection extends StatelessWidget {
                                 child: SizedBox(
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
-                                    
-                                    children: List.generate(3, (coinIndex) => FutureBuilder(
-                                      future: _loadCoinSave(int.parse(levelNames[index])),
-                                      builder: (context, snapshot) {
-                                        if(snapshot.connectionState != ConnectionState.waiting) {
-                                          return Image(
-                                            image: (coinIndex < (snapshot.data ?? 0)) ? const AssetImage('assets/in_game/coin_1.png') : const AssetImage('assets/in_game/coin_grey.png'),
-                                            width: 35,
-                                            height: 35,
-                                          );
-                                        }
-                                        return Container();
-                                      }
-                                    ),
-                                    ),
+                                    children: List.generate(
+                                        3,
+                                        (coinIndex) => Image(
+                                              image: (coinIndex < 2)
+                                                  ? const AssetImage(
+                                                      'assets/in_game/coin_1.png')
+                                                  : const AssetImage(
+                                                      'assets/in_game/coin_grey.png'),
+                                              width: 40,
+                                              height: 40,
+                                            )),
                                   ),
                                 ),
                               ),
