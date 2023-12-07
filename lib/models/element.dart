@@ -12,7 +12,7 @@ enum AssetsPaths {
   laserStart(['assets/in_game/laser_start_red.png']),
   laserEnd(['assets/in_game/laser_end.png', 'assets/in_game/laser_end_red.png']),
   mirrorEmpty(['assets/in_game/mirror_empty.png']),
-  mirrorLaser(['assets/in_game/mirror_laser.png']),
+  mirrorLaser(['assets/in_game/mirror_laser1.png', 'assets/in_game/mirror_laser2.png']),
   wall(['assets/in_game/wall.png']),
   playerUp(['assets/in_game/player_north_1.png', 'assets/in_game/player_north_2.png', 'assets/in_game/player_north_static.png']),
   playerDown(['assets/in_game/player_south_1.png', 'assets/in_game/player_south_2.png', 'assets/in_game/player_south_static.png']),
@@ -82,7 +82,6 @@ class Mirror extends ElementLevel with ChangeNotifier {
   Mirror(int clockwiseTimes) : super(AssetsPaths.mirrorEmpty) {  // clockwiseTimes == 0 => vertical '-' Mirror
     _clockwiseTimes = clockwiseTimes % 8;
   }
-
 
   double get angle => _clockwiseTimes * pi / 4;
 
