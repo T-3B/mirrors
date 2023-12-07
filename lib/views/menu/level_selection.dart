@@ -61,34 +61,46 @@ class LevelSelection extends StatelessWidget {
                       );
                     },
                     child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Stack(
-                          children: [
-                            Center(
-                              child: Text('Level ${levelNames[index]}'),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: SizedBox(
-                                height: 40,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: List.generate(
-                                      3,
-                                      (coinIndex) => Image(
-                                            image: (coinIndex < 2)
-                                                ? const AssetImage(
-                                                    'assets/in_game/coin_1.png')
-                                                : const AssetImage(
-                                                    'assets/in_game/coin_grey.png'),
-                                            width: 40,
-                                            height: 40,
-                                          )),
+                      surfaceTintColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      color: Colors.transparent,
+                      borderOnForeground: false,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/in_game/wall.png'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: Stack(
+                            children: [
+                              Center(
+                                child: Text('Level ${levelNames[index]}'),
+                              ),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: SizedBox(
+                                  height: 40,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: List.generate(
+                                        3,
+                                        (coinIndex) => Image(
+                                              image: (coinIndex < 2)
+                                                  ? const AssetImage(
+                                                      'assets/in_game/coin_1.png')
+                                                  : const AssetImage(
+                                                      'assets/in_game/coin_grey.png'),
+                                              width: 40,
+                                              height: 40,
+                                            )),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
