@@ -9,6 +9,7 @@ import 'package:mirrors/views/animation/sprite_animation.dart';
 import 'package:mirrors/views/level/overlay_level.dart';
 import 'package:mirrors/views/menu/common.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../menu/loading.dart';
 
@@ -30,19 +31,16 @@ class LevelView extends StatelessWidget {
             dialog = AlertDialog(
               title: const Text('You died'),
               actions: [
-                //Hero(
-                  //tag: null,
-                  /*child:*/ TextButton(
-                    child: const Text('Go back to main menu'),
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed('home');
-                      // Navigator.of(context).pop();
-                    },
-                  //),
+                TextButton(
+                  child: const Text('Go back to main menu'),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed('home');
+                  },
                 ),
               ],
             );
           } else if(map.isWin) {
+            _saveCoinSave(levelID, 3 - map.levelMap.entries.where((element) => element.value is Coin).length);
             HapticFeedback.mediumImpact();
             dialog = AlertDialog(
               title: const Text('You Win'),
@@ -166,7 +164,7 @@ class LevelView extends StatelessWidget {
 
                 final playerPosition = map.playerPosition;
 
-                Position cursorPosition = map.cursorNextPosition;
+                Position cursorPosition = map.cursorCurrentPosition;
 
                 LevelController controller = LevelController(map);
 
@@ -232,6 +230,11 @@ class LevelView extends StatelessWidget {
         }
       },
     );
+  }
+
+  Future<void> _saveCoinSave(int id, int number) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('levelCoin$id', number);
   }
 }
 

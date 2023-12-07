@@ -149,7 +149,6 @@ class Mirror extends ElementLevel with ChangeNotifier {
 }
 
 class Player extends ElementLevel {
-  // with ChangeNotifier {  // TODO
   Player._privateConstructor() : super(AssetsPaths.player);
 
   static Player? _instance;
@@ -158,9 +157,6 @@ class Player extends ElementLevel {
     _instance ??= Player._privateConstructor();
     return _instance!;
   }
-
-  @override
-  void dispose() {}
 
   static Future<Widget> getViewFacing(Direction direction) async {
     final aPath = switch (direction) {
