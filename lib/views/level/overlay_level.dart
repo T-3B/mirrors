@@ -253,7 +253,7 @@ class _GameButtonState extends State<GameButton> {
       onTapDown: (_) {
         _isButtonPressed = true;
         widget.tapDownFunction(_);
-        _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+        _timer = Timer.periodic(const Duration(milliseconds: 325), (timer) {
           if (_isButtonPressed) {
             widget.tapDownFunction(_);
           } else {
