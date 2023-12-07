@@ -29,7 +29,7 @@ class Common extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: Colors.red,
+      color: Colors.grey,
       /*decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
