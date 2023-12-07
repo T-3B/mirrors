@@ -203,7 +203,6 @@ class GameMap extends ChangeNotifier {
     while (grid.values.whereType<Ground>().length * 4 > grid.length) {
       final laserDirs = [Direction.up, Direction.down, Direction.left, Direction.right];
       laserDirs.shuffle(rand);
-      outerLoop:
       for (final dir in laserDirs) { // laser start has a direction (other than none); iterate through all dirs in case one does not have any solution
         final laserStartPosList = grid.keys.where((pos) => grid[pos] is Ground && grid[pos.translate(dir)] is Ground).toList();  // place laser start where there is a ground next to it
         for (final laserStartPos in laserStartPosList..shuffle(rand)) {
@@ -286,10 +285,5 @@ class GameMap extends ChangeNotifier {
           String() => Wall() // "default" case
         }
     );
-  }
-
-  @override
-  void dispose() {
-
   }
 }
