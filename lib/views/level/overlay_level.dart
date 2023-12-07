@@ -145,6 +145,7 @@ class SoundButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, GlobalSettings gs, _) {
       return FloatingActionButton(
+        heroTag: UniqueKey(),
         backgroundColor: Colors.black,
         onPressed: () {
           gs.volume = !gs.volume;
@@ -166,6 +167,7 @@ class HapticsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, GlobalSettings gs, _) {
       return FloatingActionButton(
+        heroTag: UniqueKey(),
         backgroundColor: Colors.black,
         onPressed: () {
           gs.vibration = !gs.vibration;
