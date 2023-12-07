@@ -168,6 +168,17 @@ class GameMap extends ChangeNotifier {
     }
   }
 
+  void refreshLasers(Map<Position, ElementLevel> grid) {
+    // remove the lasers from the grid (put a Ground()), so we will rotate randomly mirrors and then re-add the lasers
+    grid.entries.where((e) => [LaserBeamCross, LaserBeamVertical, LaserBeamHorizontal].contains(e.value.runtimeType)).forEach((e) { grid[e.key] = Ground(); });
+
+    //re-add lasers
+    final laserStarts = grid.entries.where((e) => e.value is LaserStart);
+    for (final e in laserStarts) {
+      placeLasersFrom(grid, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
+    }
+  }
+
   Map<Position, ElementLevel> _generateRandomLevel() {
     final rand = Random();
     height = rand.nextInt(7) + 8;
@@ -180,7 +191,7 @@ class GameMap extends ChangeNotifier {
     final Map<Position, ElementLevel> grid = Map.fromIterable(Iterable.generate(height * width, (i) => Position(i % width, i ~/ width)), value: (e) => e.y == 0 || e.y == height - 1 || e.x == 0 || e.x == width - 1 ? Wall() : Ground());
 
     // ---------------- place Walls ----------------------------------------------------------------------
-    final groundsPositions = grid.keys.where((e) => grid[e] is Ground).toList()..shuffle(rand);
+    var groundsPositions = grid.keys.where((e) => grid[e] is Ground).toList()..shuffle(rand);
     for (int i = 0; i < numAggregatedWalls; i++) {
       var pos = groundsPositions[0];
       for (int k = 0; k < numAggregatedWallsSize && grid[pos] is! Wall; k++) {
@@ -200,43 +211,49 @@ class GameMap extends ChangeNotifier {
 
     // ----------------- LaserStart, Beam, End + Mirrors ------------------------------------------------------
     // while more than half of the map is ground, continue to add laser starts
-    exitLaserCreation:
-    while (grid.values.whereType<Ground>().length * 4 > grid.length) {
-      final laserDirs = [Direction.up, Direction.down, Direction.left, Direction.right];
-      laserDirs.shuffle(rand);
+    var minLength = 6;
+    while (grid.values.whereType<LaserStart>().isEmpty && minLength != 0) {
+      final laserDirs = [Direction.up, Direction.down, Direction.left, Direction.right]..shuffle(rand);
+      outerLoop:
       for (final dir in laserDirs) { // laser start has a direction (other than none); iterate through all dirs in case one does not have any solution
         final laserStartPosList = grid.keys.where((pos) => grid[pos] is Ground && grid[pos.translate(dir)] is Ground).toList();  // place laser start where there is a ground next to it
         for (final laserStartPos in laserStartPosList..shuffle(rand)) {
           grid[laserStartPos] = LaserStart(dir);  // place the laser start, we are sure it was a Ground before
-          final isFeasible = _findBeamPath(grid, laserStartPos.translate(dir), dir, rand.nextInt(3) + 3);  // each laser beam path has between 3 and 3 corners between start and end
+          var isFeasible = _findBeamPath(grid, laserStartPos.translate(dir), dir, minLength == 1 ? 3 : rand.nextInt(5) + minLength);  // each laser beam path has between 6 and 10 corners between start and end
+          groundsPositions = grid.keys.where((e) => grid[e] is Ground).toList();
+          if (grid.keys.where((e) => grid[e] is Mirror).any((e) => !groundsPositions.any((ground) => ground.isNeighborOf(e)))) {
+            // then a mirror does not have any ground neighbor
+            isFeasible = false;
+            // remove all laserStart Beam End Mirrors
+            grid.entries.where((e) => [LaserBeamCross, LaserBeamHorizontal, LaserBeamVertical, LaserStart, LaserEnd, Mirror].contains(e.value.runtimeType)).forEach((e) { grid[e.key] = Ground(); });
+          }
           if (isFeasible) {
-            break exitLaserCreation;
+            break outerLoop;
           } else {
             grid[laserStartPos] = Ground();
           }
         }
       }
-      break;
+      minLength--;
     }
-
-    // remove the lasers from the grid (put a Ground()), so we will rotate randomly mirrors and then re-add the lasers
-    grid.entries.where((e) => e.value is LaserBeamCross || e.value is LaserBeamHorizontal || e.value is LaserBeamVertical).forEach((e) { grid[e.key] = Ground(); });
 
     // rotate mirrors
     grid.values.whereType<Mirror>().forEach((e) { for (var i = rand.nextInt(3) + 1; i != 0; i--) { e.rotate(RotationDirection.clockwise); } });
 
-    //re-add lasers
-    final laserStarts = grid.entries.where((e) => e.value is LaserStart);
-    for (final e in laserStarts) {
-      placeLasersFrom(grid, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
-    }
+    // the oldLaserPositions will be the positions of the laser path without the ones after the refresh
+    final oldLaserPositions = grid.keys.where((e) => [LaserBeamCross, LaserBeamVertical, LaserBeamHorizontal].contains(grid[e].runtimeType)).toList()..shuffle(rand);
+    refreshLasers(grid);
+
+    grid.keys.where((e) => [LaserBeamCross, LaserBeamVertical, LaserBeamHorizontal].contains(grid[e].runtimeType)).forEach((e) { oldLaserPositions.remove(e); });
+
+    oldLaserPositions.take(2).forEach((e) { grid[e] = Coin(); });
 
     // get all remaining Grounds, shuffle Positions
     final remainingGrounds = grid.keys.where((e) => grid[e] is Ground).toList()..shuffle(rand);
     // choose random 3 Ground Positions to place Coins
-    remainingGrounds.take(3).forEach((e) { grid[e] = Coin(); });
+    grid[remainingGrounds.first] = Coin();
     // place the Player at random Ground Position
-    grid[remainingGrounds[3]] = Player();
+    grid[remainingGrounds[1]] = Player();
 
     return grid;
   }
@@ -246,14 +263,7 @@ class GameMap extends ChangeNotifier {
       _levelMap = _generateRandomLevel();
     } else if(_levelID != levelID) {
       _levelMap = _parseLevelRows(const LineSplitter().convert(await rootBundle.loadString('assets/levels/$levelID.txt')));
-      levelMap.entries.where((e) => e.value is LaserBeamCross || e.value is LaserBeamHorizontal || e.value is LaserBeamVertical).forEach((e) { levelMap[e.key] = Ground(); });
-
-      //re-add lasers
-      final laserStarts = levelMap.entries.where((e) => e.value is LaserStart);
-      for (final e in laserStarts) {
-        placeLasersFrom(levelMap, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
-      }
-      
+      refreshLasers(_levelMap);
     } else {
       _levelMap = _generateRandomLevel();
     }

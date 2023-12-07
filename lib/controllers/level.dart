@@ -57,7 +57,7 @@ class LevelController {
             map.levelMap[Position(playerPosition.x + x + x, playerPosition.y + y + y)] = map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)]!;
             map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
             map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
-            _rewriteLaser();
+            map.refreshLasers(map.levelMap);
           }
           map.cursorNextPosition;
           map.notifyAllListeners();
@@ -80,7 +80,7 @@ class LevelController {
         case Ground:
           map.levelMap[Position(playerPosition.x, playerPosition.y)] = Ground();
           map.levelMap[Position(playerPosition.x + x, playerPosition.y + y)] = Player();
-          _rewriteLaser();
+          map.refreshLasers(map.levelMap);
           map.cursorNextPosition;
           map.notifyAllListeners();
           return;
@@ -95,7 +95,7 @@ class LevelController {
 
     if(map.levelMap[cursorPosition] is Mirror) {
       (map.levelMap[cursorPosition] as Mirror).rotate(rotationDirection);
-      _rewriteLaser();
+      map.refreshLasers(map.levelMap);
       map.notifyAllListeners();
     }
   }
@@ -103,16 +103,5 @@ class LevelController {
   void changeCursorPosition() {
     map.cursorNextPosition;
     map.notifyAllListeners();
-  }
-
-  void _rewriteLaser() {
-    // remove the lasers from the grid (put a Ground()), so we will rotate randomly mirrors and then re-add the lasers
-    map.levelMap.entries.where((e) => e.value is LaserBeamCross || e.value is LaserBeamHorizontal || e.value is LaserBeamVertical).forEach((e) { map.levelMap[e.key] = Ground(); });
-
-    //re-add lasers
-    final laserStarts = map.levelMap.entries.where((e) => e.value is LaserStart);
-    for (final e in laserStarts) {
-      map.placeLasersFrom(map.levelMap, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
-    }
   }
 }
