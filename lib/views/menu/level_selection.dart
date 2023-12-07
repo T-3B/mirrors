@@ -61,15 +61,17 @@ class LevelSelection extends StatelessWidget {
                       );
                     },
                     child: Card(
-                      surfaceTintColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
                       color: Colors.transparent,
                       borderOnForeground: false,
                       child: Container(
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage('assets/in_game/wall.png'),
+                            image: AssetImage(
+                                'assets/in_game/level_selector_bg.png'),
                             fit: BoxFit.cover,
+                          ),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
                           ),
                         ),
                         child: Padding(
