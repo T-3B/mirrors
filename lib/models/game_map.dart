@@ -15,14 +15,19 @@ class GameMap extends ChangeNotifier {
 
   bool _isLose = false;
 
-  bool _isWin = false;
+  int _isWin = 0;
 
-  set isWin(bool value) {
+  set isWin(int value) {
     _isWin = value;
     notifyListeners();
   }
 
-  bool get isWin {
+  void incIsWin() {
+    _isWin++;
+    notifyListeners();
+  }
+
+  int get isWin {
     return _isWin;
   }
 
@@ -64,7 +69,6 @@ class GameMap extends ChangeNotifier {
   List<Position> get mirrorsPositions => levelMap.keys.where((e) => levelMap[e] is Mirror).toList();
   Position get cursorCurrentPosition => _mirrorsNeighborsOfPlayer.isEmpty ? playerPosition.translate(playerFacing) : _mirrorsNeighborsOfPlayer.first;
   Position get cursorNextPosition {
-    print('test cursor');
     final newPlayerPosition = playerPosition;
     if (_playerLastPosition != newPlayerPosition) {
       _mirrorsNeighborsOfPlayer = mirrorsPositions.where((e) => e.isNeighborOf(newPlayerPosition)).toList();
@@ -156,9 +160,14 @@ class GameMap extends ChangeNotifier {
     while (grid[pos] is Ground || grid[pos] is LaserBeamHorizontal || grid[pos] is LaserBeamVertical || grid[pos] is Coin) {
       grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
       pos = pos.translate(dir);
+      if(grid[pos] is Player) {
+        isLose = true;
+        notifyListeners();
+        return;
+      }
     }
     if(grid[pos] is LaserEnd) {
-      _isWin = true;
+      incIsWin();
     }
     if (grid[pos] is Mirror) {
       final nextDir = (grid[pos] as Mirror).reflectedDir(dir);
@@ -234,8 +243,11 @@ class GameMap extends ChangeNotifier {
           }
         }
       }
-      minLength--;
+      break;
     }
+
+    // remove the lasers from the grid (put a Ground()), so we will rotate randomly mirrors and then re-add the lasers
+    grid.entries.where((e) => e.value is LaserBeamCross || e.value is LaserBeamHorizontal || e.value is LaserBeamVertical).forEach((e) { grid[e.key] = Ground(); });
 
     // rotate mirrors
     grid.values.whereType<Mirror>().forEach((e) { for (var i = rand.nextInt(3) + 1; i != 0; i--) { e.rotate(RotationDirection.clockwise); } });

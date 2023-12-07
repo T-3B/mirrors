@@ -70,7 +70,7 @@ abstract class ElementLevel {
 
   Future<Widget> get view async {
     _images ??= _assetsPaths.paths.map((e) => Image(image: AssetImage(e), fit: BoxFit.contain)).toList();
-    _view ??= _images!.length > 1 ? SpriteAnimation(_images!, const Duration(milliseconds: 150)) : _images![0];
+    _view ??= _images!.length > 1 ? SpriteAnimation(_images!, const Duration(milliseconds: 300)) : _images![0];
     return _view!;
   }
 }
