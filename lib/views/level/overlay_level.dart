@@ -188,6 +188,7 @@ class PlayPauseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      heroTag: UniqueKey(),
       backgroundColor: Colors.black,
       onPressed: () {
         if(controller.isGameRunning) { // test if game is running
@@ -243,6 +244,7 @@ class GameButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      heroTag: UniqueKey(),
       backgroundColor: Colors.transparent,
       onPressed: callbackAction,
       child: Image(
