@@ -41,9 +41,7 @@ class LevelSelection extends StatelessWidget {
                       padding: const EdgeInsets.all(0),
                     ),
                     onPressed: () {
-                      final levelID = (levelNames[index] == 'random')
-                          ? -1
-                          : int.parse(levelNames[index]);
+                      final levelID = (levelNames[index] == 'random') ? -1 : int.parse(levelNames[index]);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -66,13 +64,10 @@ class LevelSelection extends StatelessWidget {
                       child: Container(
                         decoration: const BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage(
-                                'assets/in_game/level_selector_bg.png'),
+                            image: AssetImage('assets/in_game/level_selector_bg.png'),
                             fit: BoxFit.cover,
                           ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(2.0),
@@ -90,14 +85,10 @@ class LevelSelection extends StatelessWidget {
                                     children: List.generate(
                                         3,
                                         (coinIndex) => Image(
-                                              image: (coinIndex < 2)
-                                                  ? const AssetImage(
-                                                      'assets/in_game/coin_1.png')
-                                                  : const AssetImage(
-                                                      'assets/in_game/coin_grey.png'),
-                                              width: 40,
-                                              height: 40,
-                                            )),
+                                          image: (coinIndex < 2) ? const AssetImage('assets/in_game/coin_1.png') : const AssetImage('assets/in_game/coin_grey.png'),
+                                          width: 40,
+                                          height: 40,
+                                        )),
                                   ),
                                 ),
                               ),
