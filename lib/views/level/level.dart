@@ -39,7 +39,7 @@ class LevelView extends StatelessWidget {
                 ),
               ],
             );
-          } else if(map.isWin) {
+          } else if(map.isWin >= map.levelMap.entries.where((element) => element.value is LaserEnd).length) {
             _saveCoinSave(levelID, 3 - map.levelMap.entries.where((element) => element.value is Coin).length);
             HapticFeedback.mediumImpact();
             dialog = AlertDialog(

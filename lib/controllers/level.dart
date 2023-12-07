@@ -111,6 +111,7 @@ class LevelController {
 
     //re-add lasers
     final laserStarts = map.levelMap.entries.where((e) => e.value is LaserStart);
+    map.isWin = 0;
     for (final e in laserStarts) {
       map.placeLasersFrom(map.levelMap, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
     }

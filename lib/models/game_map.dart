@@ -15,14 +15,19 @@ class GameMap extends ChangeNotifier {
 
   bool _isLose = false;
 
-  bool _isWin = false;
+  int _isWin = 0;
 
-  set isWin(bool value) {
+  set isWin(int value) {
     _isWin = value;
     notifyListeners();
   }
 
-  bool get isWin {
+  void incIsWin() {
+    _isWin++;
+    notifyListeners();
+  }
+
+  int get isWin {
     return _isWin;
   }
 
@@ -162,7 +167,7 @@ class GameMap extends ChangeNotifier {
       }
     }
     if(grid[pos] is LaserEnd) {
-      _isWin = true;
+      incIsWin();
     }
     if (grid[pos] is Mirror) {
       final nextDir = (grid[pos] as Mirror).reflectedDir(dir);
@@ -232,6 +237,7 @@ class GameMap extends ChangeNotifier {
     //re-add lasers
     final laserStarts = grid.entries.where((e) => e.value is LaserStart);
     for (final e in laserStarts) {
+      _isWin = 0;
       placeLasersFrom(grid, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
     }
 
@@ -255,6 +261,7 @@ class GameMap extends ChangeNotifier {
       //re-add lasers
       final laserStarts = levelMap.entries.where((e) => e.value is LaserStart);
       for (final e in laserStarts) {
+        _isWin = 0;
         placeLasersFrom(levelMap, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
       }
       
