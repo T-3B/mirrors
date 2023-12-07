@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mirrors/controllers/level.dart';
 import 'package:mirrors/models/element.dart';
@@ -141,6 +139,7 @@ class SoundButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, GlobalSettings gs, _) {
       return FloatingActionButton(
+        heroTag: UniqueKey(),
         backgroundColor: Colors.black,
         onPressed: () {
           gs.volume = !gs.volume;
@@ -162,6 +161,7 @@ class HapticsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, GlobalSettings gs, _) {
       return FloatingActionButton(
+        heroTag: UniqueKey(),
         backgroundColor: Colors.black,
         onPressed: () {
           gs.vibration = !gs.vibration;
@@ -184,6 +184,7 @@ class PlayPauseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      heroTag: UniqueKey(),
       backgroundColor: Colors.black,
       onPressed: () {
         if(controller.isGameRunning) { // test if game is running

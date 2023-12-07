@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mirrors/controllers/level.dart';
 import 'package:mirrors/models/element.dart';
 import 'package:mirrors/models/game_map.dart';
@@ -23,20 +24,27 @@ class LevelView extends StatelessWidget {
         if (!map.isReady) {
           return const Loading();
         } else {
+          Widget dialog = Container();
           if(map.isLose) {
-            return AlertDialog(
+            HapticFeedback.mediumImpact();
+            dialog = AlertDialog(
               title: const Text('You died'),
               actions: [
-                TextButton(
-                  child: const Text('Go back to main menu'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
+                //Hero(
+                  //tag: null,
+                  /*child:*/ TextButton(
+                    child: const Text('Go back to main menu'),
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed('home');
+                      // Navigator.of(context).pop();
+                    },
+                  //),
+                ),
               ],
             );
           } else if(map.isWin) {
-            return AlertDialog(
+            HapticFeedback.mediumImpact();
+            dialog = AlertDialog(
               title: const Text('You Win'),
               actions: [
                 TextButton(
@@ -213,7 +221,8 @@ class LevelView extends StatelessWidget {
                     ] + mirrorsView + coinView + laserBeamHorizontalView + laserBeamVerticalView +
                         laserBeamCrossView + laserEndView + <Widget>[
                           OverlayLevel(controller: controller),
-                    ]
+                          dialog,
+                    ]// + dialog
                   ),
                 );
               }
