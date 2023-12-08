@@ -29,7 +29,7 @@ class LevelView extends StatelessWidget {
           if(map.isLose) {
             HapticFeedback.mediumImpact();
             dialog = AlertDialog(
-              title: const Text('You died'),
+              title: const Text('You died!'),
               actions: [
                 TextButton(
                   child: const Text('Go back to main menu'),
@@ -43,7 +43,7 @@ class LevelView extends StatelessWidget {
             _saveCoinSave(levelID, 3 - map.levelMap.entries.where((element) => element.value is Coin).length);
             HapticFeedback.mediumImpact();
             dialog = AlertDialog(
-              title: const Text('You Win'),
+              title: const Text('You won!'),
               actions: [
                 TextButton(
                   child: const Text('Go back to main menu'),
