@@ -39,8 +39,8 @@ class LevelView extends StatelessWidget {
                 ),
               ],
             );
-          } else if(map.isWin >= map.levelMap.entries.where((element) => element.value is LaserEnd).length) {
-            _saveCoinSave(levelID, 3 - map.levelMap.entries.where((element) => element.value is Coin).length);
+          } else if(map.isWon) {
+            _saveCoinSave(levelID, map.pickedCoins);
             HapticFeedback.mediumImpact();
             dialog = AlertDialog(
               title: const Text('You won!'),
@@ -242,13 +242,8 @@ Future<Map<Type, dynamic>> _fetch() async => {
       Coin: await Coin().view,
       Ground: await Ground().view,
       Wall: await Wall().view,
-      Player: await Direction.values
-          .map((e) async => await Player.getViewFacing(e))
-          .wait,
-      Mirror: [
-        await Mirror.getViewFacing(true),
-        await Mirror.getViewFacing(false)
-      ],
+      Player: await Direction.values.map((e) async => await Player.getViewFacing(e)).wait,
+      Mirror: [await Mirror.getViewFacing(true), await Mirror.getViewFacing(false)],
       LaserStart: await LaserStart(Direction.up).view,
       LaserBeamVertical: await LaserBeamVertical().view,
       LaserBeamHorizontal: await LaserBeamHorizontal().view,

@@ -97,6 +97,9 @@ class Mirror extends ElementLevel with ChangeNotifier {
   // return the reflected Direction of the input Direction (using the Mirror angle);
   // Direction.none reflected beam overlaps the input (e.g. inDir == right; thus reflected to outDir == left)
   Direction reflectedDir(Direction inDir) {
+    if (inDir == Direction.none) {
+      isLaserTouching = false;
+    }
     switch (_clockwiseTimes) {  // add 4 to clockwise (pi rad) if the reflection is on the "wrong side" of the asset mirrorLaser
       case 1:  // mirror '-\'    the dash - is where a laser is on the mirrorLaser asset
         if (inDir == Direction.down || inDir == Direction.left) {

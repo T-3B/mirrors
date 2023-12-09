@@ -14,7 +14,7 @@ class OverlayLevel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int coinCount = controller.map.levelMap.entries.where((element) => element.value is Coin,).length;
+    int coinCount = controller.map.pickedCoins;
     return Stack(children: [
       Positioned(
         top: 0,
@@ -26,21 +26,21 @@ class OverlayLevel extends StatelessWidget {
               width: 70,
               height: 70,
               child: Image(
-                image: (coinCount > 2) ? const AssetImage('assets/in_game/coin_grey.png') : const AssetImage('assets/in_game/coin_1.png'),
+                image: (coinCount > 0) ? const AssetImage('assets/in_game/coin_1.png') : const AssetImage('assets/in_game/coin_grey.png'),
               ),
             ),
             SizedBox(
               width: 70,
               height: 70,
               child: Image(
-                image: (coinCount > 1) ? const AssetImage('assets/in_game/coin_grey.png') : const AssetImage('assets/in_game/coin_1.png'),
+                image: (coinCount > 1) ? const AssetImage('assets/in_game/coin_1.png') : const AssetImage('assets/in_game/coin_grey.png'),
               ),
             ),
             SizedBox(
               width: 70,
               height: 70,
               child: Image(
-                image: (coinCount > 0) ? const AssetImage('assets/in_game/coin_grey.png') : const AssetImage('assets/in_game/coin_1.png'),
+                image: (coinCount > 2) ? const AssetImage('assets/in_game/coin_1.png') : const AssetImage('assets/in_game/coin_grey.png'),
               ),
             ),
           ],
@@ -78,18 +78,18 @@ class OverlayLevel extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 20), 
               child: GameButton(icon: const AssetImage('assets/in_game/button_action_rotate_left.png'), tapDownFunction: (_) {
-                controller.rotateMirror(RotationDirection.clockwise);
-              }),
+                controller.rotateMirror(RotationDirection.counterclockwise);
+              }, controller: controller),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 20), 
               child: GameButton( icon: const AssetImage('assets/in_game/button_action.png'), tapDownFunction: (_) {
                 controller.changeCursorPosition();
-              })
+              }, controller: controller)
             ),
             GameButton(icon: const AssetImage('assets/in_game/button_action_rotate_right.png'), tapDownFunction: (_) {
-              controller.rotateMirror(RotationDirection.counterclockwise);
-            }),
+              controller.rotateMirror(RotationDirection.clockwise);
+            }, controller: controller),
           ],
         ),
       ),
@@ -104,7 +104,7 @@ class OverlayLevel extends StatelessWidget {
               padding: const EdgeInsets.only(right: 5),
               child: GameButton(icon: const AssetImage('assets/in_game/dpad_button_west.png'), tapDownFunction: (_) {
                 controller.movePlayer(Direction.left);
-              }),
+              }, controller: controller),
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -114,18 +114,18 @@ class OverlayLevel extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 40),
                   child: GameButton(icon: const AssetImage('assets/in_game/dpad_button_north.png'), tapDownFunction: (_) {
                     controller.movePlayer(Direction.up);
-                  }),
+                  }, controller: controller),
                 ),
                 GameButton(icon: const AssetImage('assets/in_game/dpad_button_south.png'), tapDownFunction: (_) {
                   controller.movePlayer(Direction.down);
-                }),
+                }, controller: controller),
               ],
             ),
             Padding(
               padding: const EdgeInsets.only(left: 5),
               child: GameButton(icon: const AssetImage('assets/in_game/dpad_button_east.png'), tapDownFunction: (_) {
                 controller.movePlayer(Direction.right);
-              }),
+              }, controller: controller),
             ),
           ],
         ),
@@ -236,8 +236,9 @@ class PlayPauseButton extends StatelessWidget {
 class GameButton extends StatefulWidget {
   final ImageProvider<Object> icon;
   final void Function(TapDownDetails) tapDownFunction;
+  final LevelController controller;
 
-  const GameButton({super.key, required this.icon, required this.tapDownFunction});
+  const GameButton({super.key, required this.icon, required this.tapDownFunction, required this.controller});
 
   @override
   State createState() => _GameButtonState();
@@ -251,23 +252,29 @@ class _GameButtonState extends State<GameButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) {
-        _isButtonPressed = true;
-        widget.tapDownFunction(_);
-        _timer = Timer.periodic(const Duration(milliseconds: 325), (timer) {
-          if (_isButtonPressed) {
-            widget.tapDownFunction(_);
-          } else {
-            timer.cancel();
-          }
-        });
+        if (!widget.controller.isGameFinished()) {
+          _isButtonPressed = true;
+          widget.tapDownFunction(_);
+          _timer = Timer.periodic(const Duration(milliseconds: 325), (timer) {
+            if (_isButtonPressed && !widget.controller.isGameFinished()) {
+              widget.tapDownFunction(_);
+            } else {
+              timer.cancel();
+            }
+          });
+        }
       },
       onTapCancel: () {
-        _timer.cancel();
-        _isButtonPressed = false;
+        if (!widget.controller.isGameFinished()) {
+          _timer.cancel();
+          _isButtonPressed = false;
+        }
       },
       onTapUp: (_) {
-        _timer.cancel();
-        _isButtonPressed = false;
+        if (!widget.controller.isGameFinished()) {
+          _timer.cancel();
+          _isButtonPressed = false;
+        }
       },
       child: Image(
         image: widget.icon,

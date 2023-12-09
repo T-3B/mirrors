@@ -10,55 +10,17 @@ class GameMap extends ChangeNotifier {
   static GameMap? _map;
 
   late Map<Position, ElementLevel> _levelMap;
+  late int _maxCoinsNbr;
   Direction playerFacing = Direction.down;
-  int width = 0, height = 0;
-
-  bool _isLose = false;
-
-  int _isWin = 0;
-
-  set isWin(int value) {
-    _isWin = value;
-    notifyListeners();
-  }
-
-  int get isWin {
-    return _isWin;
-  }
-
-  set isLose(bool value) {
-    _isLose = value;
-    notifyListeners();
-  }
-
-  bool get isLose {
-    return _isLose;
-  }
-
+  int width = 0, height = 0, _levelID = 0, _reachedLaserEnds = 0;
   Position _initialPlayerPosition = Position(1, 1);
   Position _playerLastPosition = Position(-1, -1);
   List<Position> _mirrorsNeighborsOfPlayer = [];
-
-  int _levelID = 0;
-  bool isReady = false;
+  bool isReady = false, _isLose = false, _isWon = false;
 
   List<Position> initialMirrorsPosition = [];
 
   Map<Position, ElementLevel> get levelMap => _levelMap;
-
-  factory GameMap(int id) {
-    _map = GameMap._privateConstructor(id);
-    return _map!;
-  }
-
-  GameMap._privateConstructor(int id) {
-    _loadLevelData(id);
-  }
-
-  set levelMap(Map<Position, ElementLevel> value) {
-    _levelMap = value;
-    notifyListeners();
-  }
   Position get initialPlayerPosition => _initialPlayerPosition;
   Position get playerPosition => levelMap.entries.firstWhere((e) => e.value is Player).key;
   List<Position> get mirrorsPositions => levelMap.keys.where((e) => levelMap[e] is Mirror).toList();
@@ -72,6 +34,40 @@ class GameMap extends ChangeNotifier {
       _mirrorsNeighborsOfPlayer.add(_mirrorsNeighborsOfPlayer.removeAt(0));  // cycle the list (put the first element at the end)
     }
     return cursorCurrentPosition;
+  }
+
+  bool get isWon {
+    return _isWon;
+  }
+
+  set isLose(bool value) {
+    _isLose = value;
+    notifyListeners();
+  }
+
+  bool get isLose {
+    return _isLose;
+  }
+  
+  int get pickedCoins => _maxCoinsNbr - _levelMap.values.whereType<Coin>().length;
+
+  factory GameMap(int id) {
+    _map = GameMap._privateConstructor(id);
+    return _map!;
+  }
+
+  GameMap._privateConstructor(int id) {
+    _loadLevelData(id);
+  }
+
+  bool _incrementLaserEndReached() {  // return true if Game was won
+    _reachedLaserEnds++;
+    if (_reachedLaserEnds == _levelMap.values.whereType<LaserEnd>().length) {
+      _isWon = true;
+      notifyAllListeners();
+      return true;
+    }
+    return false;
   }
 
   void notifyAllListeners() {
@@ -151,36 +147,38 @@ class GameMap extends ChangeNotifier {
     return false;
   }
 
-  void placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
+  void _placeLasersFrom(Map<Position, ElementLevel> grid, Position pos, Direction dir) {
     while (grid[pos] is Ground || grid[pos] is LaserBeamHorizontal || grid[pos] is LaserBeamVertical || grid[pos] is Coin) {
-      grid[pos] = grid[pos] is LaserBeamVertical || grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : (dir == Direction.up || dir == Direction.down ? LaserBeamVertical() : LaserBeamHorizontal());
-      pos = pos.translate(dir);
-      if(grid[pos] is Player) {
-        isLose = true;
-        notifyAllListeners();
-        return;
+      if (grid[pos] is Coin) {
+        _maxCoinsNbr--;
       }
+      grid[pos] = dir == Direction.up || dir == Direction.down ? (grid[pos] is LaserBeamHorizontal ? LaserBeamCross() : LaserBeamVertical()) : (grid[pos] is LaserBeamVertical ? LaserBeamCross() : LaserBeamHorizontal());
+      pos = pos.translate(dir);
     }
-    if(grid[pos] is LaserEnd) {
-      isWin++;
+    if( grid[pos] is LaserEnd && _incrementLaserEndReached()) {
+      return;
+    }
+    if (grid[pos] is Player) {
+      isLose = true;
     }
     if (grid[pos] is Mirror) {
       final nextDir = (grid[pos] as Mirror).reflectedDir(dir);
       if (nextDir != Direction.none) {
-        placeLasersFrom(grid, pos.translate(nextDir), nextDir);
+        _placeLasersFrom(grid, pos.translate(nextDir), nextDir);
       }
     }
   }
 
   void refreshLasers(Map<Position, ElementLevel> grid) {
-    isWin=0;
     // remove the lasers from the grid (put a Ground()), so we will rotate randomly mirrors and then re-add the lasers
     grid.entries.where((e) => [LaserBeamCross, LaserBeamVertical, LaserBeamHorizontal].contains(e.value.runtimeType)).forEach((e) { grid[e.key] = Ground(); });
+
+    grid.values.whereType<Mirror>().forEach((e) { e.isLaserTouching = false; });
 
     //re-add lasers
     final laserStarts = grid.entries.where((e) => e.value is LaserStart);
     for (final e in laserStarts) {
-      placeLasersFrom(grid, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
+      _placeLasersFrom(grid, e.key.translate((e.value as LaserStart).dir), (e.value as LaserStart).dir);
     }
   }
 
@@ -269,6 +267,7 @@ class GameMap extends ChangeNotifier {
     _levelID = levelID;
     _initialPlayerPosition = _levelMap.entries.firstWhere((e) => e.value is Player).key;
     initialMirrorsPosition = _levelMap.entries.where((e) => e.value is Mirror).map((e) => e.key).toList();
+    _maxCoinsNbr = _levelMap.values.whereType<Coin>().length;
     isReady = true;
     notifyListeners();
   }

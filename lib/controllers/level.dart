@@ -5,7 +5,7 @@ class LevelController {
   final GameMap map;
 
   late bool _isGameRunning;
-  
+
   set isGameRunning(bool value) {
     _isGameRunning = value;
     map.notifyAllListeners();
@@ -104,4 +104,6 @@ class LevelController {
     map.cursorNextPosition;
     map.notifyAllListeners();
   }
+
+  bool isGameFinished() => map.isLose || map.isWon;
 }
