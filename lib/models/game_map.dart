@@ -157,6 +157,7 @@ class GameMap extends ChangeNotifier {
       pos = pos.translate(dir);
       if(grid[pos] is Player) {
         isLose = true;
+        notifyAllListeners();
         return;
       }
     }
@@ -214,31 +215,28 @@ class GameMap extends ChangeNotifier {
     }
 
     // ----------------- LaserStart, Beam, End + Mirrors ------------------------------------------------------
-    // while more than half of the map is ground, continue to add laser starts
     exitLaserCreation:
-    while (grid.values.whereType<Ground>().length * 4 > grid.length) {
+    for (var laserBeamLines = 8; laserBeamLines > 1; laserBeamLines--) {  // at first try to find a long laser path, then if we did not found an solution decrement it
       final laserDirs = [Direction.up, Direction.down, Direction.left, Direction.right];
       laserDirs.shuffle(rand);
       for (final dir in laserDirs) { // laser start has a direction (other than none); iterate through all dirs in case one does not have any solution
         final laserStartPosList = grid.keys.where((pos) => grid[pos] is Ground && grid[pos.translate(dir)] is Ground).toList();  // place laser start where there is a ground next to it
         for (final laserStartPos in laserStartPosList..shuffle(rand)) {
           grid[laserStartPos] = LaserStart(dir);  // place the laser start, we are sure it was a Ground before
-          var isFeasible = _findBeamPath(grid, laserStartPos.translate(dir), dir, rand.nextInt(3) + 3);  // each laser beam path has between 3 and 3 corners between start and end
+          var isFeasible = _findBeamPath(grid, laserStartPos.translate(dir), dir, laserBeamLines);  // each laser beam path has between 3 and 3 corners between start and end
           groundsPositions = grid.keys.where((e) => grid[e] is Ground).toList();
           if (grid.keys.where((e) => grid[e] is Mirror).any((e) => !groundsPositions.any((ground) => ground.isNeighborOf(e)))) {
-            // then a mirror does not have any ground neighbor
+            // then a mirror does not have any ground neighbor, so the player can't rotate it (not a feasible level)
             isFeasible = false;
-            // remove all laserStart Beam End Mirrors
-            grid.entries.where((e) => [LaserBeamCross, LaserBeamHorizontal, LaserBeamVertical, LaserStart, LaserEnd, Mirror].contains(e.value.runtimeType)).forEach((e) { grid[e.key] = Ground(); });
           }
           if (isFeasible) {
             break exitLaserCreation;
           } else {
-            grid[laserStartPos] = Ground();
+            // remove the whole laser path
+            grid.entries.where((e) => [LaserBeamCross, LaserBeamHorizontal, LaserBeamVertical, LaserStart, LaserEnd, Mirror].contains(e.value.runtimeType)).forEach((e) { grid[e.key] = Ground(); });
           }
         }
       }
-      break;
     }
 
     // the oldLaserPositions will be the positions of the laser path without the ones after the refresh
