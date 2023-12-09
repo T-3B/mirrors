@@ -28,7 +28,7 @@ class MainApp extends StatelessWidget {
         routes: {
           'home': (context) => ChangeNotifierProvider(
             create: (context) => HomeAssets(),
-            child: const Home(),
+            child: const Scaffold(body: Home()),
           ),
           'about': (context) => const About(),
           'settings': (context) => const Settings(),
