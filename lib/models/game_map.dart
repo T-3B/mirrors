@@ -229,7 +229,7 @@ class GameMap extends ChangeNotifier {
             // then a mirror does not have any ground neighbor, so the player can't rotate it (not a feasible level)
             isFeasible = false;
           }
-          if (isFeasible) {
+          if (isFeasible && grid.values.whereType<LaserStart>().isNotEmpty) {  // dirty workaround to not have a level without LaserStart
             break exitLaserCreation;
           } else {
             // remove the whole laser path
