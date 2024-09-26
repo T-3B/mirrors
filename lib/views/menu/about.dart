@@ -53,11 +53,11 @@ class About extends StatelessWidget {
             const Card(
               child: Padding(
                 padding: EdgeInsets.all(16),
-                child: Text('''
+                child: Text('''Reflector Quest is a puzzle mobile game that presents players with a series of challenging levels. The game involves navigating a small map filled with lasers, coins, mirrors, and a player-controlled character. The objective is to strategically move mirrors to guide laser beams from a light source to their endpoints. Players must also collect three coins as a side quest. Achievements are earned and displayed on the level selection page upon successfully completing a level.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu sollicitudin sem. In sed placerat risus. Curabitur interdum turpis orci, non pellentesque felis hendrerit eget. Nam fringilla risus velit, volutpat consectetur ex sollicitudin id. Donec accumsan mi erat, eget suscipit massa mollis nec. Pellentesque porta sem vitae magna mattis rhoncus. Integer rutrum, neque sed mollis pretium, mauris arcu ornare ex, at imperdiet felis nisi sed est. Pellentesque volutpat vitae tellus vel bibendum. Nunc non massa efficitur, aliquam ex eget, imperdiet leo. Phasellus a erat feugiat, bibendum nibh sed, varius ante. Suspendisse sed libero vitae lorem fringilla molestie. Duis laoreet vulputate est in imperdiet.
+During gameplay, players face the challenge of avoiding contact with laser beams, which can end the game if the player is hit. Additionally, hitting coins with laser beams results in instant destruction. The goal is to navigate the map, collect coins, and complete the level without being harmed by the laser beams.
 
-In sit amet consectetur arcu. In sollicitudin non sapien nec sodales. Integer purus enim, pulvinar vel tellus ac, vestibulum condimentum sem. Donec pellentesque ex et eros sodales vulputate. Curabitur et velit justo. Aliquam erat volutpat. Phasellus lacus nisi, vestibulum id fringilla rhoncus, ullamcorper eu ipsum. Praesent sodales risus ac dolor pellentesque, eu rutrum nisl pellentesque. Proin pulvinar volutpat tincidunt. Phasellus commodo aliquam diam, quis mattis odio pellentesque a. '''),
+Reflector Quest provides the option to play on pre-designed levels or generate random levels using a dynamic level generator. Opting for a randomly generated level ensures a constantly evolving and solvable experience for players, offering new challenges as they progress through the game.'''),
               ),
             ),
           ],

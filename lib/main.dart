@@ -4,8 +4,7 @@ import 'package:mirrors/models/global_settings.dart';
 import 'package:mirrors/models/home/home_assets.dart';
 import 'package:mirrors/views/menu/about.dart';
 import 'package:mirrors/views/menu/home.dart';
-import 'package:mirrors/views/menu/level.dart';
-import 'package:mirrors/views/menu/loading.dart';
+import 'package:mirrors/views/menu/level_selection.dart';
 import 'package:mirrors/views/menu/settings.dart';
 import 'package:provider/provider.dart';
 
@@ -27,14 +26,16 @@ class MainApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         routes: {
-          'home': (context) => const Home(),
+          'home': (context) => ChangeNotifierProvider(
+            create: (context) => HomeAssets(),
+            child: const Scaffold(body: Home()),
+          ),
           'about': (context) => const About(),
           'settings': (context) => const Settings(),
           'play': (context) => ChangeNotifierProvider(
-            create: (context) => HomeAssets(),
-            child: const Level(),
-          ),
-          'random': (context) => const Loading(), // change by random level class 
+                create: (context) => HomeAssets(),
+                child: const LevelSelection(),
+              ),
         },
         home: Scaffold(
           body: ChangeNotifierProvider(

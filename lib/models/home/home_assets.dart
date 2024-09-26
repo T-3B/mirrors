@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +63,8 @@ class HomeAssets extends ChangeNotifier {
     List<String> fileNames = [];
 
     try {
-      List<String> assetFiles = await rootBundle.loadString('AssetManifest.json')
+      List<String> assetFiles = await rootBundle
+          .loadString('AssetManifest.json')
           .then((String manifestContent) {
         Map<String, dynamic> manifestMap = json.decode(manifestContent);
         return manifestMap.keys

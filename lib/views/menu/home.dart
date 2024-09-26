@@ -8,8 +8,34 @@ import 'package:mirrors/views/menu/common.dart';
 import 'package:mirrors/views/menu/loading.dart';
 import 'package:provider/provider.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+  @override
+  State createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with WidgetsBindingObserver {
+  late GlobalSettings _settings;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      _settings.inApp = false;
+    } else if (state == AppLifecycleState.resumed) {
+      _settings.inApp = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,33 +43,24 @@ class Home extends StatelessWidget {
       iconColor: MaterialStatePropertyAll(Colors.white),
     );
 
-    return Consumer2(builder: (context, HomeAssets homeAssets, GlobalSettings settings, _) {
+    return Consumer2(
+        builder: (context, HomeAssets homeAssets, GlobalSettings settings, _) {
+      _settings = settings;
+
       if (!homeAssets.ready) {
         return const Loading();
       } else {
         // play music
-        if(settings.volume) {
+        if (settings.volume && settings.inApp) {
           homeAssets.mainTheme!.resume();
           homeAssets.mainTheme!.setReleaseMode(ReleaseMode.loop);
         } else {
           homeAssets.mainTheme!.stop();
         }
 
-        //MusicPlayer(homeAssets.mainTheme!);
-
         return Common(
           Stack(
             children: [
-              /*Consumer(
-                builder: (context, GlobalSettings settings, child) {
-                  if(settings.volume) {
-                    homeAssets.mainTheme!.resume();
-                    homeAssets.mainTheme!.setReleaseMode(ReleaseMode.loop);
-                  } else {
-                    homeAssets.mainTheme!.stop();
-                  }
-                },
-              ),*/
               Positioned(
                 top: 0,
                 right: 0,
@@ -170,50 +187,3 @@ class Home extends StatelessWidget {
     });
   }
 }
-
-/*class MusicPlayer extends StatefulWidget {
-  final AudioPlayer player;
-
-  const MusicPlayer(this.player, {super.key});
-
-  @override
-  State<StatefulWidget> createState() {
-    return MusicPlayerState();
-  }
-}
-
-class MusicPlayerState extends State<MusicPlayer> with WidgetsBindingObserver {
-  late AppLifecycleState appLifecycleState;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    appLifecycleState = state;
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive) {
-      if (widget.player.state == PlayerState.playing) {
-        widget.player.pause();
-      }
-    } else if (state == AppLifecycleState.resumed) {
-      if (widget.player.state == PlayerState.paused) {
-        widget.player.resume();
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}*/
